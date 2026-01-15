@@ -124,3 +124,34 @@ If you believe trust should be **earned, not forced**, Credo is built for that v
 ---
 
 > *Made with vision and curiosity by Team Credo* 💙
+
+
+
+
+## 2.9 
+D:\SW-2\S85-0126-BruteForces-Full-Stack-Development-with-Next.js-AWS-Azure-Credo>git add .
+warning: in the working copy of 'src/app/components/LintTest.tsx', LF will be replaced by CRLF the next time Git touches it
+
+D:\SW-2\S85-0126-BruteForces-Full-Stack-Development-with-Next.js-AWS-Azure-Credo>git commit -m "test: failing commit"
+✔ Backed up original state in git stash (86e4614)
+⚠ Running tasks for staged files...
+  ❯ package.json — 2 files
+    ❯ *.{ts,tsx,js,jsx} — 1 file
+      ✖ eslint --fix [FAILED]
+      ◼ prettier --write
+↓ Skipped because of errors from tasks.
+✔ Reverting to original state because of errors...
+✔ Cleaning up temporary files...
+
+✖ eslint --fix:
+
+D:\SW-2\S85-0126-BruteForces-Full-Stack-Development-with-Next.js-AWS-Azure-Credo\src\app\components\LintTest.tsx
+  4:7   warning  'data' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  7:19  warning  'props' is defined but never used          @typescript-eslint/no-unused-vars
+  7:26  error    Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+
+✖ 3 problems (1 error, 2 warnings)
+
+husky - pre-commit hook exited with code 1 (error)
+
+

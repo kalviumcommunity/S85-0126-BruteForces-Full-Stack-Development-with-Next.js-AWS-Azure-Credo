@@ -1,7 +1,7 @@
 {
   "extends": ["next/core-web-vitals", "plugin:prettier/recommended"],
   "rules": {
-    "no-console": "warn",
+    "no-console": "error", 
     "semi": ["error", "always"],
     "quotes": ["error", "double"],
     "react/no-unescaped-entities": "off"
