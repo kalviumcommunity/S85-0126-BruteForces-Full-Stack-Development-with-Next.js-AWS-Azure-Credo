@@ -1,126 +1,36 @@
-# 🚀 Credo
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-> **Lightweight Digital Credibility for Small Businesses**
+## Getting Started
 
-Credo is a project built to solve a real-world problem: **small-scale entrepreneurs often lack a verified digital identity or online credibility**, making it hard for customers, platforms, and partners to trust them. Traditional KYC systems are heavy, expensive, and intimidating.
+First, run the development server:
 
-Credo introduces a **low-friction, trust-first authentication system** that helps local businesses establish credibility **without complex KYC processes**.
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
----
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## 🧠 Problem Statement
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-Small-scale entrepreneurs (street vendors, local shops, freelancers, micro-businesses) face major challenges:
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-* ❌ No verified digital presence
-* ❌ Customers hesitate due to lack of trust
-* ❌ Heavy KYC requirements exclude many users
-* ❌ No simple way to prove authenticity online
+## Learn More
 
-**How can we authenticate local businesses without heavy KYC friction?**
+To learn more about Next.js, take a look at the following resources:
 
----
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-## 💡 Our Solution – Credo
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-Credo provides a **digital credibility layer** for small businesses using:
+## Deploy on Vercel
 
-* Minimal identity inputs
-* Community & network-based verification
-* Reputation signals instead of documents
-* Gradual trust-building over time
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Rather than forcing full KYC upfront, Credo allows trust to **grow organically**.
-
----
-
-## ✨ Key Features
-
-* 🔐 **Low-Friction Onboarding**
-  No complex document uploads or long verification queues.
-
-* 🪪 **Credibility Profiles**
-  Each business gets a unique Credo profile showing trust signals.
-
-* 🌐 **Community-Based Validation**
-  Credibility increases through interactions, reviews, and endorsements.
-
-* 📈 **Reputation Score (Credo Score)**
-  A dynamic score reflecting trustworthiness, not paperwork.
-
-* 🧩 **Scalable & Inclusive**
-  Designed for local vendors, gig workers, and small entrepreneurs.
-
----
-
-## 🏗️ How Credo Works (High-Level)
-
-1. Business signs up with minimal details
-2. A basic Credo profile is created
-3. Trust signals are collected over time:
-
-   * Customer interactions
-   * Consistency of activity
-   * Community feedback
-4. Credo Score improves as trust grows
-5. Businesses can share their Credo profile publicly
-
----
-
-## 🛠️ Tech Stack (To be Planned)
----
-
-## 🎯 Target Users
-
-* 🏪 Local shop owners
-* 🧑‍🔧 Service providers
-* 🎨 Freelancers
-* 🛒 Street vendors
-* 🚀 Early-stage entrepreneurs
-
----
-
-## 📌 Use Cases
-
-* Customers verifying local businesses
-* Platforms onboarding vendors faster
-* Communities building local trust networks
-* Digital marketplaces for micro-entrepreneurs
-
----
-
-## 🤝 Team
-
-This project is built as a collaborative academic/project initiative by:
-
-* **Vansh Thapar**
-* **Rishiraj Singh**
-* **Moksh Sharma**
-
----
-
-## 📈 Future Scope
-
-* Blockchain-backed credibility proofs
-* QR-based public Credo profiles
-* Integration with local marketplaces
-* AI-based trust & fraud detection
-* Open Credo API for third-party platforms
-
----
-
-## 📄 License
-
-This project is developed for learning, experimentation, and innovation purposes.
-
----
-
-## ⭐ Final Note
-
-Credo is not about proving *who you are* — it’s about proving **you can be trusted**.
-
-If you believe trust should be **earned, not forced**, Credo is built for that vision.
-
----
-
-> *Made with vision and curiosity by Team Credo* 💙
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
