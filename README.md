@@ -181,3 +181,13 @@ Schema follows 1NF, 2NF, and 3NF:
 - Indexed foreign keys
 - Separate trust signals (reviews, endorsements)
 - Easily extensible for blockchain or AI trust layers
+
+## 🚀 Team Workflow & Collaboration
+
+We follow a professional Git workflow to maintain code quality.
+
+### 🔌 Branching Strategy
+* `feature/<name>`: New features
+* `fix/<name>`: Bug fixes
+* `chore/<name>`: Config/Maintenance
+* `docs/<name>`: Documentation
