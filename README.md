@@ -125,9 +125,6 @@ If you believe trust should be **earned, not forced**, Credo is built for that v
 
 > *Made with vision and curiosity by Team Credo* 💙
 
-
-
-
 ## 2.9 
 D:\SW-2\S85-0126-BruteForces-Full-Stack-Development-with-Next.js-AWS-Azure-Credo>git add .
 warning: in the working copy of 'src/app/components/LintTest.tsx', LF will be replaced by CRLF the next time Git touches it
@@ -155,3 +152,32 @@ D:\SW-2\S85-0126-BruteForces-Full-Stack-Development-with-Next.js-AWS-Azure-Credo
 husky - pre-commit hook exited with code 1 (error)
 
 
+## 🗄️ Database Schema (PostgreSQL + Prisma)
+
+### Core Entities
+- User
+- Business
+- Review
+- Endorsement
+
+### Relationships
+- One User → Many Businesses
+- One Business → Many Reviews
+- One Business → Many Endorsements
+
+### Constraints
+- UNIQUE email for users
+- CHECK constraint on review rating (1–5)
+- ON DELETE CASCADE for relational cleanup
+- Indexed foreign keys for performance
+
+### Normalization
+Schema follows 1NF, 2NF, and 3NF:
+- Atomic fields only
+- No redundant data
+- Clear ownership of attributes
+
+### Scalability Considerations
+- Indexed foreign keys
+- Separate trust signals (reviews, endorsements)
+- Easily extensible for blockchain or AI trust layers

@@ -1,18 +1,7 @@
-import React from "react";
-
-interface LintTestProps {
-  message: string;
+type Props = {
+  data?: unknown
 }
 
-const LintTest = ({ message }: LintTestProps) => {
-  const title = "Test Component";
-
-  return (
-    <div>
-      <h1>{title}</h1>
-      <p>{message}</p>
-    </div>
-  );
-};
-
-export default LintTest;
+export default function LintTest(_props: Props) {
+  return <div>Lint Test</div>
+}

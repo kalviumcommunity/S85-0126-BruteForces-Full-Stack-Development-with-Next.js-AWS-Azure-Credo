@@ -10,9 +10,14 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@prisma/client": "^6.19.2",
     "next": "16.1.2",
+    "prisma": "^6.19.2",
     "react": "19.2.3",
     "react-dom": "19.2.3"
+  },
+  "prisma": {
+  "seed": "ts-node prisma/seed.ts"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -30,12 +35,10 @@
     "tailwindcss": "^4",
     "typescript": "^5"
   },
-
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
       "eslint --fix",
       "prettier --write"
     ]
-  
-}
+  }
 }
