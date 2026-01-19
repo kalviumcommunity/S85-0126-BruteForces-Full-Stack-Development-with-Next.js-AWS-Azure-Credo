@@ -1,34 +1,37 @@
+version: '3.8'
+
 services:
+  # The Database Service
+  postgres:
+    image: postgres:15-alpine
+    container_name: nextjs_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # The Next.js App Service
   app:
     build: .
     container_name: nextjs_app
+    restart: always
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=postgres://postgres:password@db:5432/mydb
-      - REDIS_URL=redis://redis:6379
-    depends_on:
-      - db
-      - redis
-
-  db:
-    image: postgres:15-alpine
-    container_name: postgres_db
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: mydb
+      # CRITICAL: We use 'postgres' as the hostname, not 'localhost'
+      DATABASE_URL: "postgresql://myuser:mypassword@postgres:5432/mydatabase"
     volumes:
-      - db_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-
-  redis:
-    image: redis:7-alpine
-    container_name: redis_cache
-    ports:
-      - "6379:6379"
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+    # Command to push the schema to the DB when the container starts
+    command: npm run dev
 
 volumes:
-  db_data:
+  postgres_data:
