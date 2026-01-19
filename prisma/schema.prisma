@@ -39,7 +39,7 @@ model Business {
 
 model Review {
   id         Int      @id @default(autoincrement())
-  rating     Int      @check(rating >= 1 && rating <= 5)
+  rating      Int
   comment    String?
   businessId Int
   createdAt  DateTime @default(now())
