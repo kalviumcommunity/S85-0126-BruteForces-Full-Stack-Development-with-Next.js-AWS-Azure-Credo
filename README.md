@@ -200,3 +200,19 @@ We follow a professional Git workflow to maintain code quality.
   2. `npx prisma generate`
   3. `npx prisma db push`
 - **Models:** Configured `User` and `Project` models.
+
+
+## 🗄️ Database & Prisma ORM Setup
+
+We have integrated **Prisma ORM** with a **Dockerized PostgreSQL** database.
+
+### 1. Architecture
+* **Database:** PostgreSQL running in a Docker container (`nextjs_postgres`).
+* **ORM:** Prisma handles schema validation and type-safe queries.
+* **Network:** The Next.js app connects to the database via the internal Docker network at `postgres:5432`.
+
+### 2. Setup Highlights
+* **Singleton Pattern:** Implemented in `src/lib/prisma.ts` to prevent connection exhaustion during Next.js hot-reloading.
+* **Schema:** Defined `User` and `Project` models in `prisma/schema.prisma`.
+* **Migrations:** Database schema is synced using `npx prisma db push`.
+
