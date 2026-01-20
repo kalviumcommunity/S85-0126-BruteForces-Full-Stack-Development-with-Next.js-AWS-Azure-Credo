@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { verifyToken } from "@/lib/auth";
 
 const users = [
   { id: 1, name: "Alice" },
@@ -6,18 +7,34 @@ const users = [
 ];
 
 export async function GET(req: Request) {
+  const authHeader = req.headers.get("authorization");
+  const token = authHeader?.split(" ")[1];
+
+  if (!token || !verifyToken(token)) {
+    return NextResponse.json(
+      { error: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
   const { searchParams } = new URL(req.url);
   const page = Number(searchParams.get("page")) || 1;
   const limit = Number(searchParams.get("limit")) || 10;
 
-  return NextResponse.json({
-    page,
-    limit,
-    data: users,
-  });
+  return NextResponse.json({ page, limit, data: users });
 }
 
 export async function POST(req: Request) {
+  const authHeader = req.headers.get("authorization");
+  const token = authHeader?.split(" ")[1];
+
+  if (!token || !verifyToken(token)) {
+    return NextResponse.json(
+      { error: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
   const body = await req.json();
 
   if (!body.name) {
