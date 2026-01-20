@@ -1,16 +1,21 @@
-import { NextResponse } from "next/server";
-
-export async function GET() {
-  return NextResponse.json([
-    { id: 1, task: "Setup API routes" },
-    { id: 2, task: "Write README" },
-  ]);
-}
+import { sendSuccess, sendError } from "@/lib/responseHandler";
 
 export async function POST(req: Request) {
-  const body = await req.json();
-  return NextResponse.json(
-    { message: "Task created", data: body },
-    { status: 201 }
-  );
+  try {
+    const data = await req.json();
+
+    // Validation Check
+    if (!data.title) {
+      return sendError(
+        "Missing required field: title",
+        "VALIDATION_ERROR",
+        400
+      );
+    }
+
+    const newTask = { id: Date.now(), title: data.title, completed: false };
+    return sendSuccess(newTask, "Task created successfully", 201);
+  } catch (err) {
+    return sendError("Invalid JSON input", "TASK_CREATION_FAILED", 500, err);
+  }
 }

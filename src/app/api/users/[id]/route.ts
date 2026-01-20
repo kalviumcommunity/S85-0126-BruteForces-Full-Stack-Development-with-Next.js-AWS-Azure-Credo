@@ -1,31 +1,22 @@
-import { NextResponse } from "next/server";
-
+import { sendSuccess, sendError } from "@/lib/responseHandler";
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  return NextResponse.json({
-    id: params.id,
-    name: "Mock User",
-  });
-}
+  try {
+    // In Next.js 15, params must be awaited
+    const { id } = await params;
 
-export async function PUT(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
-  const body = await req.json();
-  return NextResponse.json({
-    message: `User ${params.id} updated`,
-    data: body,
-  });
-}
+    // Simulate DB logic
+    if (id === "1") {
+      return sendSuccess({ id: 1, name: "Alice" }, "User fetched successfully");
+    } else if (id === "2") {
+      return sendSuccess({ id: 2, name: "Bob" }, "User fetched successfully");
+    }
 
-export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
-  return NextResponse.json({
-    message: `User ${params.id} deleted`,
-  });
+    // If ID is not 1 or 2, return a Standardized Error
+    return sendError("User not found", "NOT_FOUND", 404);
+  } catch (err) {
+    return sendError("Failed to fetch user", "INTERNAL_ERROR", 500, err);
+  }
 }
