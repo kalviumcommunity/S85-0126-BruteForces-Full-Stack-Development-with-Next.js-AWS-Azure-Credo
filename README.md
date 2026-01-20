@@ -1,124 +1,142 @@
-🚀 Credo
+# 🚀 Credo
 
-Lightweight Digital Credibility for Small Businesses
+### Lightweight Digital Credibility for Small Businesses
 
-Credo is a trust-first platform designed to help small-scale entrepreneurs establish digital credibility without heavy KYC friction. Instead of forcing document-based verification, Credo enables trust to grow organically through community validation, reputation signals, and consistent behavior.
+Credo is a **trust-first digital credibility platform** designed for small-scale entrepreneurs who lack access to traditional verification systems. Instead of forcing heavy KYC or document-based onboarding, Credo enables **organic trust-building** through community validation, reputation signals, and consistent behavior.
 
-🧠 Problem Statement
+> **Trust is earned over time — not forced upfront.**
 
-Small businesses such as street vendors, freelancers, and micro-entrepreneurs often face:
+---
 
-❌ No verified digital identity
+## 🧠 Problem Statement
 
-❌ Customer trust issues
+Small businesses such as **street vendors, freelancers, and micro-entrepreneurs** often struggle with:
 
-❌ Exclusion due to heavy KYC requirements
+* ❌ No verified digital identity
+* ❌ Customer trust issues
+* ❌ Exclusion due to heavy KYC requirements
+* ❌ No simple way to prove authenticity online
 
-❌ No simple way to prove authenticity online
+### ❓ Core Question
 
-Credo answers one question:
+**How can we establish trust without intimidating or excluding users?**
 
-How can we establish trust without intimidating or excluding users?
+---
 
-💡 Solution Overview
+## 💡 Solution Overview
 
-Credo introduces a low-friction credibility layer that allows businesses to:
+Credo introduces a **low-friction credibility layer** that allows businesses to:
 
-Onboard with minimal details
+* Onboard with **minimal details**
+* Build reputation **gradually over time**
+* Gain trust through **real interactions & endorsements**
+* Share a **public credibility profile**
 
-Build reputation gradually
+Credo replaces paperwork-based verification with **behavior-based trust**.
 
-Gain trust through interactions and endorsements
+---
 
-Share a public credibility profile
+## ✨ Key Features
 
-Trust is earned over time, not forced upfront.
+### 🔐 Low-Friction Onboarding
 
-✨ Key Features
+* No document uploads
+* No long verification queues
 
-🔐 Low-Friction Onboarding
-No document uploads or long verification queues
+### 🪪 Credibility Profiles
 
-🪪 Credibility Profiles
-Public profiles displaying trust signals
+* Public, shareable profiles
+* Displays trust signals and activity
 
-🌐 Community-Based Validation
-Reviews, endorsements, and interactions increase trust
+### 🌐 Community-Based Validation
 
-📈 Credo Score
-A dynamic reputation score based on behavior, not paperwork
+* Reviews
+* Endorsements
+* Interaction history
 
-🧩 Scalable & Inclusive
-Built for local vendors, freelancers, and early-stage entrepreneurs
+### 📈 Credo Score
 
-🏗️ High-Level Workflow
+* Dynamic reputation score
+* Based on behavior, not documents
 
-User signs up with minimal information
+### 🧩 Scalable & Inclusive
 
-A Credo profile is created
+* Built for local vendors
+* Ideal for freelancers and early-stage entrepreneurs
 
-Trust signals are collected:
+---
 
-Reviews
+## 🏗️ High-Level Workflow
 
-Endorsements
+1. User signs up with minimal information
+2. Credo profile is created
+3. Trust signals are collected:
 
-Activity consistency
+   * Reviews
+   * Endorsements
+   * Activity consistency
+4. Credo Score improves over time
+5. Profile can be shared publicly via:
 
-Credo Score improves over time
+   * Link
+   * QR Code
 
-Profile can be shared publicly via link or QR
+---
 
-🛠️ Tech Stack
-Layer	Technology
-Frontend	Next.js (App Router), TypeScript
-Backend	Next.js API Routes
-Database	PostgreSQL
-ORM	Prisma
-Auth	Lightweight identity (non-KYC)
-Tooling	ESLint, Prettier, Husky
-🗄️ Database Schema (PostgreSQL + Prisma)
-Core Entities
+## 🛠️ Tech Stack
 
-User
+| Layer    | Technology                       |
+| -------- | -------------------------------- |
+| Frontend | Next.js (App Router), TypeScript |
+| Backend  | Next.js API Routes               |
+| Database | PostgreSQL                       |
+| ORM      | Prisma                           |
+| Auth     | Lightweight identity (Non-KYC)   |
+| Tooling  | ESLint, Prettier, Husky          |
 
-Business
+---
 
-Review
+## 🗄️ Database Schema
 
-Endorsement
+### (PostgreSQL + Prisma)
 
-Relationships
+### 📦 Core Entities
 
-One User → Many Businesses
+* **User**
+* **Business**
+* **Review**
+* **Endorsement**
 
-One Business → Many Reviews
+### 🔗 Relationships
 
-One Business → Many Endorsements
+* One **User → Many Businesses**
+* One **Business → Many Reviews**
+* One **Business → Many Endorsements**
 
-Constraints
+### 🔐 Constraints
 
-Unique email per user
+* Unique email per user
+* Review rating constrained between **1–5**
+* `ON DELETE CASCADE` for relational cleanup
+* Indexed foreign keys for performance
 
-Review rating constrained between 1–5
+### 🧮 Normalization
 
-ON DELETE CASCADE for relational cleanup
+* Follows **1NF, 2NF, 3NF**
+* No redundant or derived fields
+* Clear ownership of attributes
 
-Indexed foreign keys for performance
+---
 
-Normalization
+## 🔗 RESTful API Design
 
-Follows 1NF, 2NF, 3NF
+### (Next.js App Router)
 
-No redundant or derived fields
+Credo follows REST principles using **file-based routing** under `app/api/`.
 
-Clear ownership of attributes
+### 📂 Folder Structure
 
-🔗 RESTful API Design (Next.js App Router)
-
-Credo uses file-based routing under app/api/, following REST principles.
-
-📂 Folder Structure
+```
 app/
  └── api/
      ├── users/
@@ -131,36 +149,65 @@ app/
      │   └── route.ts
      └── endorsements/
          └── route.ts
+```
 
-📡 API Endpoints
-Users
-Method	Endpoint	Description
-GET	/api/users	Get all users
-POST	/api/users	Create a new user
-Businesses
-Method	Endpoint	Description
-GET	/api/businesses	Get all businesses
-POST	/api/businesses	Create a business
-GET	/api/businesses/:id	Get business by ID
-PUT	/api/businesses/:id	Update business
-DELETE	/api/businesses/:id	Delete business
-Reviews
-Method	Endpoint	Description
-POST	/api/reviews	Add review to a business
-GET	/api/reviews	Fetch reviews
-Endorsements
-Method	Endpoint	Description
-POST	/api/endorsements	Endorse a business
-🧪 Example API Usage
-GET Users
+---
+
+## 📡 API Endpoints
+
+### 👤 Users
+
+| Method | Endpoint   | Description       |
+| ------ | ---------- | ----------------- |
+| GET    | /api/users | Get all users     |
+| POST   | /api/users | Create a new user |
+
+### 🏢 Businesses
+
+| Method | Endpoint            | Description        |
+| ------ | ------------------- | ------------------ |
+| GET    | /api/businesses     | Get all businesses |
+| POST   | /api/businesses     | Create a business  |
+| GET    | /api/businesses/:id | Get business by ID |
+| PUT    | /api/businesses/:id | Update business    |
+| DELETE | /api/businesses/:id | Delete business    |
+
+### ⭐ Reviews
+
+| Method | Endpoint     | Description   |
+| ------ | ------------ | ------------- |
+| POST   | /api/reviews | Add review    |
+| GET    | /api/reviews | Fetch reviews |
+
+### 🤝 Endorsements
+
+| Method | Endpoint          | Description        |
+| ------ | ----------------- | ------------------ |
+| POST   | /api/endorsements | Endorse a business |
+
+---
+
+## 🧪 Example API Usage
+
+### GET Users
+
+```bash
 curl -X GET http://localhost:3000/api/users
+```
 
-POST User
+### POST User
+
+```bash
 curl -X POST http://localhost:3000/api/users \
 -H "Content-Type: application/json" \
 -d '{"name":"Alice","email":"alice@example.com"}'
+```
 
-📄 Pagination Example
+---
+
+## 📄 Pagination Example
+
+```ts
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const page = Number(searchParams.get('page')) || 1;
@@ -172,28 +219,35 @@ export async function GET(req: Request) {
     data: []
   });
 }
+```
 
-⚠️ Error Handling & Status Codes
-Code	Meaning
-200	OK
-201	Created
-400	Bad Request
-404	Not Found
-500	Internal Server Error
+---
+
+## ⚠️ Error Handling & Status Codes
+
+| Code | Meaning               |
+| ---- | --------------------- |
+| 200  | OK                    |
+| 201  | Created               |
+| 400  | Bad Request           |
+| 404  | Not Found             |
+| 500  | Internal Server Error |
+
+```ts
 if (!business) {
   return NextResponse.json(
     { error: "Business not found" },
     { status: 404 }
   );
 }
+```
+
+---
 
 ## 🌐 Global API Response Handler
 
-I have implemented a unified response structure to ensure consistency across all API endpoints.
+### ✅ Success Response
 
-### 1. Response Envelope Format
-
-**Success Response:**
 ```json
 {
   "success": true,
@@ -201,3 +255,47 @@ I have implemented a unified response structure to ensure consistency across all
   "data": { "id": 1, "name": "Alice" },
   "timestamp": "2023-10-27T10:00:00Z"
 }
+```
+
+### ❌ Error Response
+
+```json
+{
+  "success": false,
+  "message": "Validation Error",
+  "errors": [
+    { "field": "email", "message": "Invalid email address" }
+  ]
+}
+```
+
+---
+
+## 🛡️ Input Validation with Zod
+
+All `POST` and `PUT` API routes use **Zod** for strict input validation.
+
+### 📁 Schemas (`src/lib/schemas/`)
+
+* **User Schema** → name, email, age
+* **Task Schema** → title, completion status
+* **Project Schema** → project title
+* **Auth Schema** → login & signup credentials
+
+---
+
+## 👥 Team
+
+* **Vansh Thapar**
+* **Rishiraj Singh**
+* **Moksh Sharma**
+
+---
+
+## 🌱 Vision
+
+Credo aims to become a **universal trust layer** for the informal economy — empowering millions of small businesses to establish credibility, unlock opportunities, and grow without exclusion.
+
+---
+
+### ⭐ If you believe trust should be inclusive — Credo is for you.
