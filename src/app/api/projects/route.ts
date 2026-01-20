@@ -1,16 +1,36 @@
 import { NextResponse } from "next/server";
-
-export async function GET() {
-  return NextResponse.json([
-    { id: 1, title: "Credo Platform" },
-    { id: 2, title: "Kalvium LMS" },
-  ]);
-}
+import { projectSchema } from "@/lib/schemas/projectSchema";
+import { ZodError } from "zod";
 
 export async function POST(req: Request) {
-  const body = await req.json();
-  return NextResponse.json(
-    { message: "Project created", data: body },
-    { status: 201 }
-  );
+  try {
+    const body = await req.json();
+
+    // Zod Validation
+    const validatedData = projectSchema.parse(body);
+
+    return NextResponse.json(
+      { success: true, message: "Project created", data: validatedData },
+      { status: 201 }
+    );
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Validation Error",
+          // 👇 FIXED: Changed .errors to .issues
+          errors: error.issues.map((e) => ({
+            field: e.path[0],
+            message: e.message,
+          })),
+        },
+        { status: 400 }
+      );
+    }
+    return NextResponse.json(
+      { success: false, message: "Internal Error" },
+      { status: 500 }
+    );
+  }
 }

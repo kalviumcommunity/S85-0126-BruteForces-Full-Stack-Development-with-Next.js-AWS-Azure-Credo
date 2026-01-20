@@ -1,27 +1,43 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
+import { signupSchema } from "@/lib/schemas/authSchema";
+import { ZodError } from "zod";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, email, password } = body;
 
-    if (!name || !email || !password) {
+    // Zod Validation
+    const validatedData = signupSchema.parse(body);
+
+    const hashedPassword = await bcrypt.hash(validatedData.password, 10);
+
+    return NextResponse.json({
+      success: true,
+      message: "Signup successful",
+      user: {
+        name: validatedData.name,
+        email: validatedData.email,
+        password: hashedPassword,
+      },
+    });
+  } catch (error) {
+    if (error instanceof ZodError) {
       return NextResponse.json(
-        { message: "All fields are required" },
+        {
+          success: false,
+          message: "Validation Error",
+          // 👇 CHANGED: use .issues instead of .errors
+          errors: error.issues.map((e) => ({
+            field: e.path[0],
+            message: e.message,
+          })),
+        },
         { status: 400 }
       );
     }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    return NextResponse.json({
-      message: "Signup successful",
-      user: { name, email, password: hashedPassword },
-    });
-  } catch (error) {
     return NextResponse.json(
-      { message: "Signup failed" },
+      { success: false, message: "Signup failed" },
       { status: 500 }
     );
   }
