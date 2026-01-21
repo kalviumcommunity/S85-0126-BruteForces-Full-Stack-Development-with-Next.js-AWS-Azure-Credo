@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { userSchema } from "@/lib/schemas/userSchema";
+import { userSchema } from "@/lib-1/schemas/userSchema";
 import { ZodError } from "zod";
 
 export async function POST(req: Request) {

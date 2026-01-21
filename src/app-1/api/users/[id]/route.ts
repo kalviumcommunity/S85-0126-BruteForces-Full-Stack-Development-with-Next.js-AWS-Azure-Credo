@@ -1,4 +1,4 @@
-import { sendSuccess, sendError } from "@/lib/responseHandler";
+import { sendSuccess, sendError } from "@/lib-1/responseHandler";
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> }

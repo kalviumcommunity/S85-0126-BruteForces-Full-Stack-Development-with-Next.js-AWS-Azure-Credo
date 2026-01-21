@@ -1,50 +1,53 @@
-// prisma/seed.ts
+import { PrismaClient } from '@prisma/client';
 
-import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  // Example User 1: Business Owner
-  const user1 = await prisma.user.upsert({
-    where: { email: "owner@example.com" },
+  console.log('🌱 Starting seed...');
+
+  // 1. Create a User (Business Owner)
+  const user = await prisma.user.upsert({
+    where: { email: 'alice@credo.local' },
     update: {},
     create: {
-      email: "owner@example.com",
-      name: "Alice Owner",
-      password: "securepassword123", // <--- ADD THIS LINE
-      role: "BUSINESS_OWNER",
-      businesses: {
-        create: {
-          name: "Alice Bakery",
-          category: "Food",
-          description: "Best cakes in town",
-          credoScore: 50,
-        },
+      email: 'alice@credo.local',
+      name: 'Alice V.',
+      password: 'hashedpassword123', // In real app, hash this!
+      role: 'BUSINESS_OWNER',
+    },
+  });
+
+  // 2. Create a Business for Alice
+  const business = await prisma.business.create({
+    data: {
+      name: 'Street Bites Chandigarh',
+      category: 'Food & Beverage',
+      description: 'Authentic local street food with high hygiene standards.',
+      ownerId: user.id,
+      credoScore: 85,
+      reviews: {
+        create: [
+          { rating: 5, comment: 'Best momos in sector 17!' },
+          { rating: 4, comment: 'Great hygiene, tasty food.' },
+        ],
+      },
+      endorsements: {
+        create: [
+          { endorser: 'Local Food Safety Officer' },
+          { endorser: 'Supplier: FreshFarms' },
+        ],
       },
     },
   });
 
-  // Example User 2: Admin
-  const admin = await prisma.user.upsert({
-    where: { email: "admin@example.com" },
-    update: {},
-    create: {
-      email: "admin@example.com",
-      name: "Super Admin",
-      password: "adminpassword123", // <--- ADD THIS LINE
-      role: "ADMIN", // This gives you a test user for your Middleware!
-    },
-  });
-
-  console.log({ user1, admin });
+  console.log(`✅ Created business: ${business.name}`);
 }
 
 main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
+  .catch((e) => {
     console.error(e);
-    await prisma.$disconnect();
     process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
   });
