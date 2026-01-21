@@ -1,5 +1,5 @@
 // Go up one level (..) to access src
-import { prisma } from "../src/lib/prisma";
+import { prisma } from "../src/lib-1/prisma";
 async function main() {
   try {
     console.log("🚀 Connecting to Docker Database...");

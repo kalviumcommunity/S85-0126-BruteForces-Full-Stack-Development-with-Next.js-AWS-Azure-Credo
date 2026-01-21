@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
-import { signupSchema } from "@/lib/schemas/authSchema";
+import { signupSchema } from "@/lib-1/schemas/authSchema";
 import { ZodError } from "zod";
 
 export async function POST(req: Request) {

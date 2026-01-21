@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client"; // <--- Import Prisma
-import { loginSchema } from "@/lib/schemas/authSchema";
+import { loginSchema } from "@/lib-1/schemas/authSchema";
 import { ZodError } from "zod";
 
 const prisma = new PrismaClient(); // <--- Initialize Prisma

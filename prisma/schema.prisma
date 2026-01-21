@@ -3,16 +3,17 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql" // or "sqlite" if you are testing locally
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL") // Used for serverless environments (Supabase)
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
-  name     String
-  email    String   @unique
-  password String   // <--- Added this field
-  role     UserRole @default(BUSINESS_OWNER)
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      UserRole @default(BUSINESS_OWNER)
   createdAt DateTime @default(now())
 
   businesses Business[]
@@ -24,11 +25,11 @@ model Business {
   category    String
   description String?
   ownerId     Int
-  credoScore  Int      @default(0)
+  credoScore  Int      @default(50) // Starts at 50/100
   createdAt   DateTime @default(now())
 
-  owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  reviews     Review[]
+  owner        User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  reviews      Review[]
   endorsements Endorsement[]
 
   @@index([ownerId])
@@ -41,7 +42,7 @@ model Review {
   businessId Int
   createdAt  DateTime @default(now())
 
-  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 
   @@index([businessId])
 }
@@ -52,7 +53,7 @@ model Endorsement {
   businessId Int
   createdAt  DateTime @default(now())
 
-  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 
   @@index([businessId])
 }
