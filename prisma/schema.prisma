@@ -3,34 +3,31 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "postgresql" // or "sqlite" if you are testing locally
   url      = env("DATABASE_URL")
 }
 
-/*
- CORE ENTITIES
-*/
-
 model User {
-  id        Int       @id @default(autoincrement())
-  name      String
-  email     String    @unique
-  role      UserRole  @default(BUSINESS_OWNER)
-  createdAt DateTime  @default(now())
+  id       Int      @id @default(autoincrement())
+  name     String
+  email    String   @unique
+  password String   // <--- Added this field
+  role     UserRole @default(BUSINESS_OWNER)
+  createdAt DateTime @default(now())
 
   businesses Business[]
 }
 
 model Business {
-  id          Int          @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   name        String
   category    String
   description String?
   ownerId     Int
-  credoScore  Int          @default(0)
-  createdAt   DateTime     @default(now())
+  credoScore  Int      @default(0)
+  createdAt   DateTime @default(now())
 
-  owner       User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   reviews     Review[]
   endorsements Endorsement[]
 
@@ -39,7 +36,7 @@ model Business {
 
 model Review {
   id         Int      @id @default(autoincrement())
-  rating      Int
+  rating     Int
   comment    String?
   businessId Int
   createdAt  DateTime @default(now())

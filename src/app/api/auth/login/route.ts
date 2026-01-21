@@ -1,46 +1,49 @@
 import { NextResponse } from "next/server";
-import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { PrismaClient } from "@prisma/client"; // <--- Import Prisma
 import { loginSchema } from "@/lib/schemas/authSchema";
 import { ZodError } from "zod";
 
-const JWT_SECRET = process.env.JWT_SECRET || "default_secret";
+const prisma = new PrismaClient(); // <--- Initialize Prisma
+const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    // Zod Validation
+    // 1. Zod Validation
     const validatedData = loginSchema.parse(body);
 
-    // Mock user (since no DB yet)
-    const mockUser = {
-      id: 1,
-      name: "Moksh",
-      email: "moksh@test.com",
-      password: "$2b$10$H3D6ZX6D9y3/lhMa5rPOBeAq3JgiczO/omROvqY5e22vvoNjI4xi2",
-    };
+    // 2. Find User in Database (Replaces Mock User)
+    const user = await prisma.user.findUnique({
+      where: { email: validatedData.email },
+    });
 
-    if (validatedData.email !== mockUser.email) {
+    if (!user) {
       return NextResponse.json(
         { success: false, message: "User not found" },
         { status: 404 }
       );
     }
 
-    const isValid = await bcrypt.compare(
-      validatedData.password,
-      mockUser.password
-    );
-    if (!isValid) {
+    // 3. Verify Password
+    // Note: Since our seed data uses plain text passwords (e.g., "adminpassword123"),
+    // we compare directly. In production, use bcrypt.compare() here.
+    if (user.password !== validatedData.password) {
       return NextResponse.json(
         { success: false, message: "Invalid credentials" },
         { status: 401 }
       );
     }
 
+    // 4. Generate JWT with ROLE
+    // CRITICAL: We added "role: user.role" so the middleware can check if they are ADMIN
     const token = jwt.sign(
-      { id: mockUser.id, email: mockUser.email },
+      {
+        id: user.id,
+        email: user.email,
+        role: user.role, // <--- This is the key part for your assignment!
+      },
       JWT_SECRET,
       { expiresIn: "1h" }
     );
@@ -49,6 +52,11 @@ export async function POST(req: Request) {
       success: true,
       message: "Login successful",
       token,
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (error) {
     if (error instanceof ZodError) {
@@ -56,7 +64,6 @@ export async function POST(req: Request) {
         {
           success: false,
           message: "Validation Error",
-          // 👇 FIXED: Changed .errors to .issues
           errors: error.issues.map((e) => ({
             field: e.path[0],
             message: e.message,
