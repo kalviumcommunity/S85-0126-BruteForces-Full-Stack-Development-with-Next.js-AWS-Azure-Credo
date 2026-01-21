@@ -296,6 +296,138 @@ All `POST` and `PUT` API routes use **Zod** for strict input validation.
 
 Credo aims to become a **universal trust layer** for the informal economy — empowering millions of small businesses to establish credibility, unlock opportunities, and grow without exclusion.
 
+
+In this lesson, you’ll learn how to build authorization middleware to protect routes based on user roles and active sessions in your Next.js application. While authentication verifies who the user is, authorization ensures what that user is allowed to do - forming the foundation of Role-Based Access Control (RBAC) in modern web apps.
+
+By the end of this lesson, you’ll have a reusable middleware that validates JWTs, checks user roles, and enforces the principle of least privilege across your API routes.
+
+Please note that you may build your project based on your own customisations, but follow this structure for uniformity.
+
+1. Understanding Authentication vs Authorization
+Before diving into code, let’s clarify these concepts again:
+
+Concept	Description	Example
+Authentication	Confirms who the user is.	User logs in with valid credentials.
+Authorization	Determines what actions they can perform.	Only admins can delete users.
+In this lesson, we’ll focus on authorization, building middleware that protects routes according to role and session validity.
+
+2. Setting Up User Roles
+Start by defining user roles in your database model. If you’re using Prisma, modify your User model as follows:
+
+model User {
+  id       Int     @id @default(autoincrement())
+  name     String
+  email    String  @unique
+  password String
+  role     String  @default("user") // e.g., "admin", "user"
+}
+This allows the backend to assign different permissions based on roles.
+
+3. Designing Middleware Folder Structure
+Inside your Next.js app/ directory, create a middleware file at the root level:
+
+app/
+ ├── api/
+ │    ├── auth/
+ │    ├── users/
+ │    └── admin/
+ ├── middleware.ts
+This middleware will intercept all incoming requests and validate authorization before routing them.
+
+4. Implementing Authorization Middleware
+Create the file app/middleware.ts with the following logic:
+
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import jwt from "jsonwebtoken";
+
+const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey";
+
+export function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+
+  // Only protect specific routes
+  if (pathname.startsWith("/api/admin") || pathname.startsWith("/api/users")) {
+    const authHeader = req.headers.get("authorization");
+    const token = authHeader?.split(" ")[1];
+
+    if (!token) {
+      return NextResponse.json({ success: false, message: "Token missing" }, { status: 401 });
+    }
+
+    try {
+      const decoded: any = jwt.verify(token, JWT_SECRET);
+
+      // Role-based access control
+      if (pathname.startsWith("/api/admin") && decoded.role !== "admin") {
+        return NextResponse.json({ success: false, message: "Access denied" }, { status: 403 });
+      }
+
+      // Attach user info for downstream handlers
+      const requestHeaders = new Headers(req.headers);
+      requestHeaders.set("x-user-email", decoded.email);
+      requestHeaders.set("x-user-role", decoded.role);
+
+      return NextResponse.next({ request: { headers: requestHeaders } });
+    } catch {
+      return NextResponse.json({ success: false, message: "Invalid or expired token" }, { status: 403 });
+    }
+  }
+
+  return NextResponse.next();
+}
+Key Idea: This middleware intercepts requests, validates the JWT, and restricts access based on user role — ensuring secure, consistent checks across all routes.
+
+5. Example: Protected Admin Route
+File: app/api/admin/route.ts
+import { NextResponse } from "next/server";
+
+export async function GET() {
+  return NextResponse.json({ success: true, message: "Welcome Admin! You have full access." });
+}
+File: app/api/users/route.ts
+import { NextResponse } from "next/server";
+
+export async function GET() {
+  return NextResponse.json({ success: true, message: "User route accessible to all authenticated users." });
+}
+6. Testing Role-Based Access
+Admin Access
+curl -X GET http://localhost:3000/api/admin \
+-H "Authorization: Bearer <ADMIN_JWT>"
+Response: { "success": true, "message": "Welcome Admin! You have full access." }
+
+Regular User Access
+curl -X GET http://localhost:3000/api/admin \
+-H "Authorization: Bearer <USER_JWT>"
+Response: { "success": false, "message": "Access denied" }
+
+7. Reflect and Document in README
+Your README.md should include:
+
+Clear diagram or flow showing how middleware intercepts requests and enforces role-based rules.
+
+Sample allowed vs denied logs from Postman.
+
+Explanation of:
+
+JWT verification in middleware.
+Role-based logic for admin/user.
+Least privilege principle — users should only have access to necessary routes.
+How future roles (e.g., editor, moderator) can be easily added.
+Deliverables
+Reusable middleware that validates JWTs and enforces RBAC across routes.
+
+At least two protected routes: one general (/api/users), one admin-only (/api/admin).
+
+A documented README containing:
+
+Middleware logic overview.
+Role checks and access outcomes.
+Screenshots/logs of successful and failed access attempts.
+Reflection on least-privilege and role extensibility.
+Pro Tip: “Authorization isn’t just about blocking users — it’s about designing trust boundaries that scale with your application’s growth.”
 ---
 
 ### ⭐ If you believe trust should be inclusive — Credo is for you.
+
