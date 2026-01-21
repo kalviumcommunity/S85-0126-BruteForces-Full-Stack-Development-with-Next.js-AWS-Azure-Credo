@@ -1,42 +1,33 @@
-// prisma/seed.ts
-
+// File: prisma/seed.ts
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  // Example User 1: Business Owner
-  const user1 = await prisma.user.upsert({
-    where: { email: "owner@example.com" },
-    update: {},
-    create: {
-      email: "owner@example.com",
-      name: "Alice Owner",
-      password: "securepassword123", // <--- ADD THIS LINE
-      role: "BUSINESS_OWNER",
-      businesses: {
-        create: {
-          name: "Alice Bakery",
-          category: "Food",
-          description: "Best cakes in town",
-          credoScore: 50,
-        },
-      },
-    },
-  });
-
-  // Example User 2: Admin
+  // 1. Create an ADMIN User
   const admin = await prisma.user.upsert({
-    where: { email: "admin@example.com" },
+    where: { email: "admin@test.com" },
     update: {},
     create: {
-      email: "admin@example.com",
+      email: "admin@test.com",
       name: "Super Admin",
-      password: "adminpassword123", // <--- ADD THIS LINE
-      role: "ADMIN", // This gives you a test user for your Middleware!
+      password: "admin123", // Simple password for testing
+      role: "ADMIN", // <--- CRITICAL: This allows access to admin routes
     },
   });
 
-  console.log({ user1, admin });
+  // 2. Create a Regular User (Business Owner)
+  const user = await prisma.user.upsert({
+    where: { email: "user@test.com" },
+    update: {},
+    create: {
+      email: "user@test.com",
+      name: "John Business",
+      password: "user123",
+      role: "BUSINESS_OWNER",
+    },
+  });
+
+  console.log({ admin, user });
 }
 
 main()
