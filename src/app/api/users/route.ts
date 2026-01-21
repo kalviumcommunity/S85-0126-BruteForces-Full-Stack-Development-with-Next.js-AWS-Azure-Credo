@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth";
+import { handleError } from "@/lib/errorHandler";
 
 const users = [
   { id: 1, name: "Alice" },
@@ -7,45 +8,44 @@ const users = [
 ];
 
 export async function GET(req: Request) {
-  const authHeader = req.headers.get("authorization");
-  const token = authHeader?.split(" ")[1];
+  try {
+    const authHeader = req.headers.get("authorization");
+    const token = authHeader?.split(" ")[1];
 
-  if (!token || !verifyToken(token)) {
-    return NextResponse.json(
-      { error: "Unauthorized" },
-      { status: 401 }
-    );
+    if (!token || !verifyToken(token)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const page = Number(searchParams.get("page")) || 1;
+    const limit = Number(searchParams.get("limit")) || 10;
+
+    return NextResponse.json({ page, limit, data: users });
+  } catch (error) {
+    return handleError(error, "GET /api/users");
   }
-
-  const { searchParams } = new URL(req.url);
-  const page = Number(searchParams.get("page")) || 1;
-  const limit = Number(searchParams.get("limit")) || 10;
-
-  return NextResponse.json({ page, limit, data: users });
 }
 
 export async function POST(req: Request) {
-  const authHeader = req.headers.get("authorization");
-  const token = authHeader?.split(" ")[1];
+  try {
+    const authHeader = req.headers.get("authorization");
+    const token = authHeader?.split(" ")[1];
 
-  if (!token || !verifyToken(token)) {
+    if (!token || !verifyToken(token)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await req.json();
+
+    if (!body.name) {
+      return NextResponse.json({ error: "Name is required" }, { status: 400 });
+    }
+
     return NextResponse.json(
-      { error: "Unauthorized" },
-      { status: 401 }
+      { message: "User created", data: body },
+      { status: 201 }
     );
+  } catch (error) {
+    return handleError(error, "POST /api/users");
   }
-
-  const body = await req.json();
-
-  if (!body.name) {
-    return NextResponse.json(
-      { error: "Name is required" },
-      { status: 400 }
-    );
-  }
-
-  return NextResponse.json(
-    { message: "User created", data: body },
-    { status: 201 }
-  );
 }
