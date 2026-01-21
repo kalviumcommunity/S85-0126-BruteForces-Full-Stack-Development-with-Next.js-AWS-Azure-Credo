@@ -427,7 +427,19 @@ Role checks and access outcomes.
 Screenshots/logs of successful and failed access attempts.
 Reflection on least-privilege and role extensibility.
 Pro Tip: “Authorization isn’t just about blocking users — it’s about designing trust boundaries that scale with your application’s growth.”
----
+---High-level idea
+
+Middleware acts like a security checkpoint that every request must pass before it reaches your API routes.
+
+Instead of checking permissions inside every route, you:
+
+Centralize security
+
+Apply rules consistently
+
+Avoid duplicated logic
+
+
 
 ### ⭐ If you believe trust should be inclusive — Credo is for you.
 
