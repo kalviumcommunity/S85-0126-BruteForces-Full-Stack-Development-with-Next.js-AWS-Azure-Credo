@@ -443,3 +443,26 @@ Avoid duplicated logic
 
 ### ⭐ If you believe trust should be inclusive — Credo is for you.
 
+## 🚀 Redis Caching Layer
+
+Credo integrates **Redis** as a caching layer to improve API performance and reduce database load for frequently accessed data.
+
+### 🔁 Cache Strategy (Cache-Aside Pattern)
+
+Credo uses the **cache-aside (lazy loading)** strategy:
+
+1. API checks Redis cache first
+2. If cache hit → data is returned instantly
+3. If cache miss → data is fetched from PostgreSQL using Prisma
+4. The result is stored in Redis for subsequent requests
+
+This ensures optimal performance while keeping the database load minimal.
+
+---
+
+### ⏳ TTL (Time-To-Live) Policy
+
+Cached data is stored with a TTL of **60 seconds**:
+
+```ts
+await redis.set("users:list", JSON.stringify(users), "EX", 60);
