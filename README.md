@@ -466,3 +466,31 @@ Cached data is stored with a TTL of **60 seconds**:
 
 ```ts
 await redis.set("users:list", JSON.stringify(users), "EX", 60);
+
+
+
+# 🌍 Global State Management
+
+This project demonstrates Global State management using React Context API and Custom Hooks in Next.js.
+
+## 🏗 Architecture
+We use a **Provider Pattern** to wrap the application and **Custom Hooks** to consume state.
+
+### File Structure
+* `context/`: Contains the Context definitions and Providers (`AuthContext`, `UIContext`).
+* `hooks/`: Custom hooks (`useAuth`, `useUI`) that wrap `useContext` for cleaner access.
+* `app/layout.tsx`: Root layout that nests the providers.
+
+### 🔄 State Flow
+1. **AuthContext**: Manages `user` object and `login`/`logout` functions.
+2. **UIContext**: Manages `theme` (light/dark) and `sidebar` visibility.
+3. **Consumers**: Components use `useAuth()` to get the current user or `useUI()` to toggle themes.
+
+## 🚀 How to Test
+1. **Login**: Click "Login as Student". The status changes to "AUTHENTICATED" and the user name appears. Check console for `✅ User logged in`.
+2. **Theme**: Click "Switch to Dark". The entire background turns dark slate.
+3. **Sidebar**: Toggle the switch. The state updates to "Open/Closed".
+
+## 🧠 Reflection
+* **Scalability**: Using Context avoids "prop-drilling" (passing data through 5+ layers of components).
+* **Performance**: We split `Auth` and `UI` into separate contexts. This ensures that updating the *Sidebar* does not trigger a re-render in components that only care about the *User*.  
