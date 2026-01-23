@@ -494,3 +494,38 @@ We use a **Provider Pattern** to wrap the application and **Custom Hooks** to co
 ## 🧠 Reflection
 * **Scalability**: Using Context avoids "prop-drilling" (passing data through 5+ layers of components).
 * **Performance**: We split `Auth` and `UI` into separate contexts. This ensures that updating the *Sidebar* does not trigger a re-render in components that only care about the *User*.  
+* 
+* # Credo - Responsive & Themed Design Assignment
+
+## 🎨 Tailwind Configuration Summary
+I have configured Tailwind to support a custom design system and dark mode switching.
+
+### Custom Breakpoints
+| Breakpoint | Width  | Usage |
+|:----------:|:------:|:----- |
+| `sm`       | 640px  | Mobile landscape |
+| `md`       | 768px  | Tablets (Grid changes to 2 columns) |
+| `lg`       | 1024px | Laptops (Grid changes to 3 columns) |
+| `xl`       | 1280px | Large Desktops |
+
+### Theme Tokens (Brand Colors)
+| Token Name      | Hex Code  | Visual |
+|:---------------|:---------:|:------:|
+| `brand-light`   | `#93C5FD` | Light Blue |
+| `brand-DEFAULT` | `#3B82F6` | Primary Blue |
+| `brand-dark`    | `#1E40AF` | Deep Blue |
+
+## 📱 Responsiveness Evidence
+- **Mobile:** Single column layout, larger touch targets.
+- **Tablet:** 2-column grid, adjusted padding.
+- **Desktop:** 3-column grid, expansive hero section.
+
+## 🌗 Theme Reflection & Accessibility
+- **Contrast:** I utilized `slate-950` for dark mode backgrounds and `gray-50` for light mode to ensure text remains readable. High contrast colors (Yellow/Green) were used for ratings/scores.
+- **Toggle:** Implemented using `localStorage` persistence so the user's preference is remembered.
+- **Challenges:** Balancing the "Cyber-Punk" aesthetic of the original dark mode with a clean, professional light mode required careful use of CSS variables in `globals.css`.
+
+## 🚀 How to Run
+1. `npm install`
+2. `npx prisma generate`
+3. `npm run dev`
