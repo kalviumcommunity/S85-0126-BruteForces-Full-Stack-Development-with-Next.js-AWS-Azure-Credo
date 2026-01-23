@@ -1,96 +1,94 @@
-// 👇 THIS IS THE FIX: Remove "/src" here
-import Navbar from "@/app/components/Navbar"; 
-import { prisma } from "@/lib/db";
-import Link from "next/link";
-import { Star, BadgeCheck, Search, ArrowRight } from "lucide-react";
+"use client";
+import { useAuth } from "@/hooks/useAuth";
+import { useUI } from "@/hooks/useUI";
 
-export const dynamic = 'force-dynamic';
-
-export default async function Home({ searchParams }: { searchParams: { q?: string } }) {
-  const query = searchParams.q || "";
-  const businesses = await prisma.business.findMany({
-    where: {
-      OR: [
-        { name: { contains: query, mode: 'insensitive' } },
-        { category: { contains: query, mode: 'insensitive' } }
-      ]
-    },
-    orderBy: { credoScore: 'desc' },
-    include: { _count: { select: { reviews: true } } }
-  });
+export default function Home() {
+  const { user, login, logout, isAuthenticated } = useAuth();
+  const { theme, toggleTheme, sidebarOpen, toggleSidebar } = useUI();
 
   return (
-    <main className="min-h-screen pb-20">
-      <Navbar />
+    <main className={`min-h-screen p-8 transition-colors duration-300 ${
+      theme === "dark" ? "bg-slate-900 text-white" : "bg-gray-50 text-black"
+    }`}>
+      <h1 className="text-3xl font-bold mb-8">Global State Demo</h1>
 
-      {/* Hero Section */}
-      <section className="pt-40 pb-20 px-6 text-center max-w-5xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-medium mb-6">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-          </span>
-          Live Trust Protocol
-        </div>
+      {/* Grid Layout for Sections */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
-          Trust is <span className="text-gradient">earned</span>, <br /> not verified by paper.
-        </h1>
-        
-        <p className="text-lg text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-          The decentralized reputation layer for the informal economy. 
-          Build credibility through community validation, anywhere.
-        </p>
-
-        {/* Search Bar Functionality */}
-        <form className="max-w-md mx-auto relative mb-8">
-          <Search className="absolute left-4 top-3.5 text-slate-500 w-5 h-5" />
-          <input 
-            name="q"
-            placeholder="Find street vendors, freelancers..." 
-            className="w-full bg-slate-900/80 border border-slate-700 rounded-full py-3 pl-12 pr-4 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition shadow-2xl"
-          />
-        </form>
-      </section>
-
-      {/* Grid */}
-      <section className="px-6 max-w-7xl mx-auto">
-        <div className="grid md:grid-cols-3 gap-6">
-          {businesses.map((b) => (
-            <Link key={b.id} href={`/business/${b.id}`} className="group">
-              <div className="glass-card h-full p-6 rounded-2xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-4 opacity-50">
-                  <BadgeCheck className="w-24 h-24 text-slate-800 -mr-8 -mt-8 group-hover:text-indigo-900/50 transition-colors" />
-                </div>
-                
-                <div className="relative z-10">
-                  <div className="flex justify-between items-start mb-4">
-                    <span className="bg-slate-800 text-slate-300 text-xs font-bold px-2 py-1 rounded border border-slate-700">
-                      {b.category}
-                    </span>
-                    <div className="flex items-center gap-1 text-green-400 font-mono font-bold">
-                      {b.credoScore} <span className="text-slate-600 text-xs">SCORE</span>
-                    </div>
-                  </div>
-                  
-                  <h3 className="text-2xl font-bold mb-2 group-hover:text-indigo-400 transition-colors">{b.name}</h3>
-                  <p className="text-slate-400 text-sm line-clamp-2 mb-6">{b.description}</p>
-                  
-                  <div className="flex items-center gap-4 text-sm text-slate-500 border-t border-slate-800 pt-4 mt-auto">
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                      <span className="text-slate-300">{b._count.reviews}</span>
-                    </div>
-                    <div className="ml-auto flex items-center gap-1 text-indigo-400 text-xs font-bold uppercase tracking-wider group-hover:translate-x-1 transition-transform">
-                      View Profile <ArrowRight className="w-3 h-3" />
-                    </div>
-                  </div>
-                </div>
+        {/* Authentication Card */}
+        <section className={`p-6 rounded-xl border ${theme === 'dark' ? 'border-slate-700 bg-slate-800' : 'border-gray-200 bg-white shadow-sm'}`}>
+          <h2 className="text-xl font-semibold mb-4 text-blue-500">🔐 Auth Context</h2>
+          
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">Status:</span>
+              <span className={`px-2 py-1 rounded text-xs font-bold ${isAuthenticated ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                {isAuthenticated ? "AUTHENTICATED" : "GUEST"}
+              </span>
+            </div>
+            
+            {isAuthenticated ? (
+              <div className="space-y-3">
+                <p>Welcome back, <strong>{user}</strong>!</p>
+                <button 
+                  onClick={logout} 
+                  className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition"
+                >
+                  Logout
+                </button>
               </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-sm opacity-75">Please log in to continue.</p>
+                <button 
+                  onClick={() => login("KalviumStudent")} 
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
+                >
+                  Login as Student
+                </button>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* UI Controls Card */}
+        <section className={`p-6 rounded-xl border ${theme === 'dark' ? 'border-slate-700 bg-slate-800' : 'border-gray-200 bg-white shadow-sm'}`}>
+          <h2 className="text-xl font-semibold mb-4 text-purple-500">🎨 UI Context</h2>
+          
+          <div className="space-y-6">
+            {/* Theme Toggle */}
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Theme Mode</p>
+                <p className="text-sm opacity-70">Current: {theme.toUpperCase()}</p>
+              </div>
+              <button 
+                onClick={toggleTheme} 
+                className={`px-4 py-2 rounded-lg border ${theme === 'dark' ? 'border-slate-600 hover:bg-slate-700' : 'border-gray-300 hover:bg-gray-100'}`}
+              >
+                Switch to {theme === 'dark' ? 'Light' : 'Dark'}
+              </button>
+            </div>
+
+            <hr className={`border-t ${theme === 'dark' ? 'border-slate-700' : 'border-gray-200'}`} />
+
+            {/* Sidebar Toggle */}
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Sidebar</p>
+                <p className="text-sm opacity-70">State: {sidebarOpen ? "Open" : "Closed"}</p>
+              </div>
+              <button 
+                onClick={toggleSidebar} 
+                className={`w-12 h-6 rounded-full p-1 transition-colors duration-200 ${sidebarOpen ? 'bg-green-500' : 'bg-gray-400'}`}
+              >
+                <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-200 ${sidebarOpen ? 'translate-x-6' : 'translate-x-0'}`} />
+              </button>
+            </div>
+          </div>
+        </section>
+
+      </div>
     </main>
   );
 }
