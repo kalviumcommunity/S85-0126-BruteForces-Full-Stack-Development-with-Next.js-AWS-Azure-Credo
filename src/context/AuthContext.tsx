@@ -1,8 +1,10 @@
-"use client"; // Required because Context uses state/hooks
+"use client";
+
 import { createContext, useContext, useState, ReactNode } from "react";
 
 interface AuthContextType {
   user: string | null;
+  isAuthenticated: boolean;
   login: (username: string) => void;
   logout: () => void;
 }
@@ -14,24 +16,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = (username: string) => {
     setUser(username);
-    console.log("✅ User logged in:", username);
   };
 
   const logout = () => {
     setUser(null);
-    console.log("❌ User logged out");
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated: !!user,
+        login,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 }
 
-// Internal helper (optional, but good practice)
 export function useAuthContext() {
   const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuthContext must be used within an AuthProvider");
+  if (!context) throw new Error("useAuthContext must be used inside AuthProvider");
   return context;
 }
