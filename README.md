@@ -529,3 +529,21 @@ I have configured Tailwind to support a custom design system and dark mode switc
 1. `npm install`
 2. `npx prisma generate`
 3. `npm run dev`
+
+
+## 📝 Form Handling with React Hook Form & Zod
+
+I have implemented a robust form validation system that ensures data integrity and user feedback.
+
+### 1. Architecture
+* **Library:** `react-hook-form` manages form state to minimize re-renders (unlike `useState` which re-renders on every keystroke).
+* **Validation:** `zod` defines the schema. If requirements change (e.g., password length), I update it in **one place** (`signupSchema.ts`).
+* **Integration:** `@hookform/resolvers` connects Zod to the form hook.
+
+### 2. Component Structure
+* `schemas/signupSchema.ts`: Defines rules (min length, regex for passwords).
+* `components/FormInput.tsx`: A reusable wrapper that handles labels, inputs, and error display logic.
+* `app/signup/page.tsx`: The main page that composes the form.
+
+### 3. Reflection
+Using **Zod** separates validation logic from UI code. In a large app, this means I can reuse the exact same schema for **Backend API validation** and **Frontend Form validation**, ensuring total consistency across the stack.
