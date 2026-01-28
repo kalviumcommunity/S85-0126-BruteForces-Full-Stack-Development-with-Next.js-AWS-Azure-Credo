@@ -21,8 +21,6 @@ Small businesses such as **street vendors, freelancers, and micro-entrepreneurs*
 
 **How can we establish trust without intimidating or excluding users?**
 
----
-
 ## 💡 Solution Overview
 
 Credo introduces a **low-friction credibility layer** that allows businesses to:
@@ -81,7 +79,6 @@ Credo replaces paperwork-based verification with **behavior-based trust**.
    * Link
    * QR Code
 
----
 
 ## 🛠️ Tech Stack
 
@@ -549,6 +546,30 @@ I have implemented a robust form validation system that ensures data integrity a
 Using **Zod** separates validation logic from UI code. In a large app, this means I can reuse the exact same schema for **Backend API validation** and **Frontend Form validation**, ensuring total consistency across the stack.
 
 
+
+## 🛡️ Input Sanitization & OWASP Compliance
+
+I have implemented security utilities to prevent Cross-Site Scripting (XSS) and SQL Injection.
+
+### 1. Implementation
+* **Library:** `sanitize-html` removes unsafe HTML tags from user input.
+* **Utility:** `src/lib/sanitize.ts` serves as a centralized cleaner function.
+* **Flow:** Input -> API -> `sanitizeInput()` -> Database.
+
+### 2. XSS Prevention Example
+* **Attack:** `<script>alert('Hacked')</script>`
+* **Result:** `""` (Empty string, script removed)
+* **Attack:** `<b>Hello</b>`
+* **Result:** `Hello` (Tags stripped, text preserved)
+
+### 3. SQL Injection (SQLi)
+* **Strategy:** I use **Prisma ORM**.
+* **Why it works:** Prisma uses **Parameterized Queries** by default. It treats user input as data, not executable code.
+* **Example:** `db.users.findFirst({ where: { name: req.body.name } })` is safe even if `name` contains `' OR 1=1`.
+
+### 4. Reflection
+Sanitization is critical because "Trusting User Input" is the #1 vulnerability in web apps. By enforcing cleaning at the API entry point, we protect both the database integrity and frontend users from malicious scripts.
+
 ## ⚡ Error & Loading States
 
 I have implemented advanced UX patterns to handle asynchronous data states gracefully.
@@ -565,3 +586,4 @@ I have implemented advanced UX patterns to handle asynchronous data states grace
 
 ### 3. Resilience Strategy
 By using these Next.js file conventions, the app is resilient. Even if the Dashboard crashes, the Navigation bar and Sidebar (defined in `layout.tsx`) remain interactive, allowing the user to navigate away.
+
