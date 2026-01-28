@@ -2,6 +2,12 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import redis from "@/lib/redis";
 
+type UserData = {
+  name: string;
+  email: string;
+};
+
+// GET /api/users
 export async function GET() {
   try {
     const cacheKey = "users:list";
@@ -29,6 +35,45 @@ export async function GET() {
   } catch (error) {
     return NextResponse.json(
       { success: false, message: "Failed to fetch users", error },
+      { status: 500 }
+    );
+  }
+}
+
+// POST /api/users
+export async function POST(request: Request) {
+  try {
+    const data: UserData = await request.json();
+    
+    // Basic validation
+    if (!data.name || !data.email) {
+      return NextResponse.json(
+        { success: false, message: 'Name and email are required' },
+        { status: 400 }
+      );
+    }
+
+    console.time('Create User API');
+    
+    // Create user in database
+    const user = await prisma.user.create({
+      data: {
+        name: data.name,
+        email: data.email,
+      },
+    });
+
+    // Invalidate cache
+    await redis.del('users:list');
+    
+    console.timeEnd('Create User API');
+    
+    return NextResponse.json(user, { status: 201 });
+    
+  } catch (error) {
+    console.error('Error creating user:', error);
+    return NextResponse.json(
+      { success: false, message: 'Failed to create user', error },
       { status: 500 }
     );
   }
