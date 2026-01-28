@@ -21,8 +21,6 @@ Small businesses such as **street vendors, freelancers, and micro-entrepreneurs*
 
 **How can we establish trust without intimidating or excluding users?**
 
----
-
 ## 💡 Solution Overview
 
 Credo introduces a **low-friction credibility layer** that allows businesses to:
@@ -81,7 +79,6 @@ Credo replaces paperwork-based verification with **behavior-based trust**.
    * Link
    * QR Code
 
----
 
 ## 🛠️ Tech Stack
 
@@ -549,6 +546,7 @@ I have implemented a robust form validation system that ensures data integrity a
 Using **Zod** separates validation logic from UI code. In a large app, this means I can reuse the exact same schema for **Backend API validation** and **Frontend Form validation**, ensuring total consistency across the stack.
 
 
+
 ## 🛡️ Input Sanitization & OWASP Compliance
 
 I have implemented security utilities to prevent Cross-Site Scripting (XSS) and SQL Injection.
@@ -571,3 +569,21 @@ I have implemented security utilities to prevent Cross-Site Scripting (XSS) and 
 
 ### 4. Reflection
 Sanitization is critical because "Trusting User Input" is the #1 vulnerability in web apps. By enforcing cleaning at the API entry point, we protect both the database integrity and frontend users from malicious scripts.
+
+## ⚡ Error & Loading States
+
+I have implemented advanced UX patterns to handle asynchronous data states gracefully.
+
+### 1. Loading UI (`loading.tsx`)
+* **Purpose:** Prevents "Layout Shift" and blank screens while data fetches.
+* **Implementation:** Uses a Skeleton Loader with Tailwind's `animate-pulse` to mimic the shape of the final content.
+* **Location:** `src/app/dashboard/loading.tsx`
+
+### 2. Error Boundary (`error.tsx`)
+* **Purpose:** Catches runtime errors preventing the entire app from crashing (White Screen of Death).
+* **Implementation:** A Client Component that catches errors and provides a `reset()` button to attempt recovery without a full page reload.
+* **Location:** `src/app/dashboard/error.tsx`
+
+### 3. Resilience Strategy
+By using these Next.js file conventions, the app is resilient. Even if the Dashboard crashes, the Navigation bar and Sidebar (defined in `layout.tsx`) remain interactive, allowing the user to navigate away.
+
