@@ -608,3 +608,25 @@ You can verify these headers by inspecting the network response in Chrome DevToo
 2. Refresh the page.
 3. Click the first document request (e.g., `localhost`).
 4. Look under **"Response Headers"** to see `Strict-Transport-Security` and `Content-Security-Policy`.
+
+
+## 🏗 Layout & Component Architecture
+
+I have implemented a modular component system to ensure scalability and consistency.
+
+### 1. Component Hierarchy
+* **RootLayout**: Wraps the entire app.
+* **LayoutWrapper**: Manages the grid structure (Header + Sidebar + Main Content).
+* **UI Components**: Atomic elements like `<Button />` used inside pages.
+
+### 2. File Structure
+* `src/components/layout/`: Header, Sidebar, Wrapper
+* `src/components/ui/`: Reusable atoms (Buttons, Inputs)
+* `src/components/index.ts`: Barrel file for clean imports
+
+### 3. Reusability Strategy
+* **Props Contract**: The `Button` component accepts a `variant` prop ('primary' | 'secondary'), allowing us to change the visual style without rewriting CSS.
+* **Consistency**: By using `LayoutWrapper`, every new page automatically inherits the navigation and sidebar, preventing layout shifts.
+
+### 4. Component Preview
+Visit `/design-system` to see the isolated components in action.
