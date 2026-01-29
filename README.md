@@ -587,3 +587,24 @@ I have implemented advanced UX patterns to handle asynchronous data states grace
 ### 3. Resilience Strategy
 By using these Next.js file conventions, the app is resilient. Even if the Dashboard crashes, the Navigation bar and Sidebar (defined in `layout.tsx`) remain interactive, allowing the user to navigate away.
 
+## 🔒 Security & Headers Implementation
+
+To secure the application against common web vulnerabilities, we have enforced strict HTTP headers globally via `next.config.mjs`.
+
+### 1. HSTS (HTTP Strict Transport Security)
+* **Configuration:** `max-age=63072000; includeSubDomains; preload`
+* **Purpose:** Forces the browser to refuse any connection that isn't HTTPS. This mitigates Man-in-the-Middle (MITM) attacks.
+
+### 2. CSP (Content Security Policy)
+* **Configuration:** Restricts sources for scripts, styles, and images.
+* **Exceptions:** Added `grainy-gradients.vercel.app` to `img-src` to allow the background texture to load securely.
+
+### 3. CORS (Cross-Origin Resource Sharing)
+* **Configuration:** API routes (`/api/*`) are configured to allow standard methods (`GET`, `POST`, etc.) but restrict headers to prevent unauthorized external triggers.
+
+### Verification
+You can verify these headers by inspecting the network response in Chrome DevTools:
+1. Open DevTools -> **Network** tab.
+2. Refresh the page.
+3. Click the first document request (e.g., `localhost`).
+4. Look under **"Response Headers"** to see `Strict-Transport-Security` and `Content-Security-Policy`.
