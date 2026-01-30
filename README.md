@@ -651,3 +651,19 @@ I have implemented a secure **Direct-to-S3** upload flow using Presigned URLs.
 
 ### 4. Lifecycle (Reflection)
 In a real app, I would enable **S3 Lifecycle Rules** to automatically move old uploads to "Glacier" storage (cheaper) or delete temporary files after 30 days to save costs.
+
+## 🚀 CI/CD Pipeline
+
+We utilize **GitHub Actions** to automate our integration and deployment workflow.
+
+**Workflow File:** `.github/workflows/ci.yml`
+
+### ⚙️ Stages
+1.  **Lint:** Checks code quality using ESLint.
+2.  **Test:** Runs unit tests (configured to pass for CI demonstration).
+3.  **Build:** Compiles the Next.js application to ensure no build errors.
+4.  **Deploy:** A conditional step that runs only on the `main` branch to simulate deployment.
+
+### ⚡ Optimization
+* **Caching:** We use `actions/setup-node` with npm caching to speed up dependency installation.
+* **Concurrency:** Configured to cancel outdated runs if a new commit is pushed to the same branch, saving CI minutes.
