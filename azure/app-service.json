@@ -1,0 +1,168 @@
+{
+  "type": "Microsoft.Web/sites",
+  "apiVersion": "2022-03-01",
+  "name": "[parameters('siteName')]",
+  "location": "[parameters('location')]",
+  "kind": "linux",
+  "properties": {
+    "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]",
+    "siteConfig": {
+      "linuxFxVersion": "DOCKER|${CONTAINER_REGISTRY}/${CONTAINER_NAME}:${CONTAINER_TAG}",
+      "alwaysOn": true,
+      "http20Enabled": true,
+      "minTlsVersion": "1.2",
+      "ftpsState": "Disabled",
+      "remoteDebuggingEnabled": false,
+      "httpLoggingEnabled": true,
+      "detailedErrorLoggingEnabled": true,
+      "appCommandLine": "",
+      "appSettings": [
+        {
+          "name": "DOCKER_REGISTRY_SERVER_URL",
+          "value": "https://${CONTAINER_REGISTRY}"
+        },
+        {
+          "name": "DOCKER_REGISTRY_SERVER_USERNAME",
+          "value": "${CONTAINER_USERNAME}"
+        },
+        {
+          "name": "DOCKER_REGISTRY_SERVER_PASSWORD",
+          "value": "${CONTAINER_PASSWORD}"
+        },
+        {
+          "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
+          "value": "true"
+        },
+        {
+          "name": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "name": "PORT",
+          "value": "3000"
+        },
+        {
+          "name": "DATABASE_URL",
+          "value": "@Microsoft.KeyVault(SecretUri=https://${KEY_VAULT_NAME}.vault.azure.net/secrets/database-url/)"
+        },
+        {
+          "name": "DIRECT_URL",
+          "value": "@Microsoft.KeyVault(SecretUri=https://${KEY_VAULT_NAME}.vault.azure.net/secrets/direct-url/)"
+        },
+        {
+          "name": "REDIS_URL",
+          "value": "@Microsoft.KeyVault(SecretUri=https://${KEY_VAULT_NAME}.vault.azure.net/secrets/redis-url/)"
+        },
+        {
+          "name": "NEXTAUTH_SECRET",
+          "value": "@Microsoft.KeyVault(SecretUri=https://${KEY_VAULT_NAME}.vault.azure.net/secrets/nextauth-secret/)"
+        }
+      ],
+      "connectionStrings": [],
+      "metadata": [
+        {
+          "name": "CURRENT_STACK",
+          "value": "docker"
+        }
+      ]
+    },
+    "httpsOnly": true,
+    "clientAffinityEnabled": false,
+    "clientCertEnabled": false,
+    "hostNamesEnabled": true,
+    "reserved": true,
+    "isXenon": false,
+    "hyperV": false,
+    "redundancyMode": "None",
+    "vnetRouteAllEnabled": false
+  },
+  "identity": {
+    "type": "SystemAssigned"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Web/sites/config",
+      "apiVersion": "2022-03-01",
+      "name": "[concat(parameters('siteName'), '/web')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "numberOfWorkers": 1,
+        "defaultDocuments": [
+          "Default.htm",
+          "Default.html",
+          "index.htm",
+          "index.html",
+          "iisstart.htm",
+          "default.aspx",
+          "index.php",
+          "hostingstart.html"
+        ],
+        "netFrameworkVersion": "v4.0",
+        "phpVersion": "5.6",
+        "pythonVersion": "2.7",
+        "nodeVersion": "20.9",
+        "linuxFxVersion": "DOCKER|${CONTAINER_REGISTRY}/${CONTAINER_NAME}:${CONTAINER_TAG}",
+        "requestTracingEnabled": false,
+        "remoteDebuggingEnabled": false,
+        "httpLoggingEnabled": true,
+        "logsDirectorySizeLimit": 35,
+        "detailedErrorLoggingEnabled": true,
+        "scmType": "None",
+        "use32BitWorkerProcess": false,
+        "webSocketsEnabled": false,
+        "alwaysOn": true,
+        "managedPipelineMode": "Integrated",
+        "experiments": {
+          "rampUpRules": []
+        },
+        "autoHealEnabled": true,
+        "autoHealRules": {
+          "triggers": {
+            "requests": {
+              "privateBytesInKB": 491520,
+              "statusCodes": [
+                "502"
+              ]
+            },
+            "slowRequests": {
+              "timeTaken": "00:02:00",
+              "path": "/*",
+              "count": 10
+            },
+            "slowRequestsWithPath": {
+              "timeTaken": "00:02:00",
+              "path": "/*",
+              "count": 10
+            },
+            "statusCodes": {
+              "statusCodes": [
+                "502"
+              ],
+              "path": "/*",
+              "count": 10
+            },
+            "statusCodesRange": {
+              "statusCodes": [
+                "400-599"
+              ],
+              "path": "/*",
+              "count": 10
+            }
+          },
+          "actions": {
+            "actionType": "CustomAction",
+            "customAction": {
+              "exe": "",
+              "parameters": ""
+            },
+            "minProcessExecutionTime": "00:01:00"
+          }
+        },
+        "scmIpSecurityRestrictionsUseProxy": true,
+        "scmIpSecurityRestrictionsDefaultAction": "Allow",
+        "scmIpSecurityRestrictions": [],
+        "functionAppScaleLimit": 0
+      }
+    }
+  ]
+}
