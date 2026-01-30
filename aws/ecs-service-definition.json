@@ -1,0 +1,51 @@
+{
+  "cluster": "credo-cluster",
+  "serviceName": "credo-app-service",
+  "taskDefinition": "credo-nextjs-app",
+  "launchType": "FARGATE",
+  "platformVersion": "LATEST",
+  "networkConfiguration": {
+    "awsvpcConfiguration": {
+      "subnets": [
+        "subnet-xxxxxxxxxxxxxxxxx",
+        "subnet-yyyyyyyyyyyyyyyyy"
+      ],
+      "securityGroups": [
+        "sg-xxxxxxxxxxxxxxxxx"
+      ],
+      "assignPublicIp": "ENABLED"
+    }
+  },
+  "desiredCount": 1,
+  "deploymentConfiguration": {
+    "deploymentCircuitBreaker": {
+      "enable": true,
+      "rollback": true
+    },
+    "maximumPercent": 200,
+    "minimumHealthyPercent": 50
+  },
+  "enableECSManagedTags": true,
+  "enableExecuteCommand": true,
+  "healthCheckGracePeriodSeconds": 60,
+  "loadBalancers": [
+    {
+      "targetGroupArn": "arn:aws:elasticloadbalancing:REGION:ACCOUNT_ID:targetgroup/credo-app-tg/xxxxxxxxxxxxxxxxx",
+      "containerName": "credo-app",
+      "containerPort": 3000
+    }
+  ],
+  "propagateTags": "SERVICE",
+  "schedulingStrategy": "REPLICA",
+  "serviceRegistries": [],
+  "tags": [
+    {
+      "key": "Project",
+      "value": "Credo"
+    },
+    {
+      "key": "Environment",
+      "value": "Production"
+    }
+  ]
+}

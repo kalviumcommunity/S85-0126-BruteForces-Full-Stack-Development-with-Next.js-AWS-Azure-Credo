@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import redis from "@/lib/redis";
+import { prisma } from "@/lib-1/prisma";
+import redis from "@/lib-1/redis";
 
 type UserData = {
   name: string;
@@ -60,6 +60,7 @@ export async function POST(request: Request) {
       data: {
         name: data.name,
         email: data.email,
+        password: 'defaultpassword123', // In production, this should be properly hashed
       },
     });
 

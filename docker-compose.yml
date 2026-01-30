@@ -4,34 +4,92 @@ services:
   # The Database Service
   postgres:
     image: postgres:15-alpine
-    container_name: nextjs_postgres
+    container_name: credo_postgres
     restart: always
     environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB: mydatabase
+      POSTGRES_USER: credo_user
+      POSTGRES_PASSWORD: credo_password
+      POSTGRES_DB: credo_db
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./prisma/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U credo_user -d credo_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Service
+  redis:
+    image: redis:7-alpine
+    container_name: credo_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # The Next.js App Service
   app:
-    build: .
-    container_name: nextjs_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
+    container_name: credo_app
     restart: always
     ports:
       - "3000:3000"
     environment:
-      # CRITICAL: We use 'postgres' as the hostname, not 'localhost'
-      DATABASE_URL: "postgresql://myuser:mypassword@postgres:5432/mydatabase"
-    volumes:
-      - .:/app
-      - /app/node_modules
+      NODE_ENV: production
+      DATABASE_URL: "postgresql://credo_user:credo_password@postgres:5432/credo_db"
+      DIRECT_URL: "postgresql://credo_user:credo_password@postgres:5432/credo_db"
+      REDIS_URL: "redis://redis:6379"
+      NEXTAUTH_URL: "http://localhost:3000"
+      NEXTAUTH_SECRET: "your-secret-key-change-in-production"
     depends_on:
-      - postgres
-    # Command to push the schema to the DB when the container starts
-    command: npm run dev
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Nginx Reverse Proxy (Optional)
+  nginx:
+    image: nginx:alpine
+    container_name: credo_nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
 volumes:
   postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  default:
+    name: credo_network
