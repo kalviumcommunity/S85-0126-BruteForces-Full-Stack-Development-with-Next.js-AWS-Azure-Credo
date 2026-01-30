@@ -630,3 +630,24 @@ I have implemented a modular component system to ensure scalability and consiste
 
 ### 4. Component Preview
 Visit `/design-system` to see the isolated components in action.
+
+
+## ☁️ AWS S3 File Upload
+
+I have implemented a secure **Direct-to-S3** upload flow using Presigned URLs.
+
+### 1. Architecture
+* **Frontend:** Selects file -> Requests URL from API -> Puts file to S3.
+* **Backend:** Generates a secure, temporary Presigned URL using AWS SDK v3.
+* **Security:** AWS Credentials are NEVER exposed to the client. The frontend only sees a temporary URL valid for 60 seconds.
+
+### 2. AWS Setup
+* **Bucket:** Private bucket with CORS enabled for `localhost:3000`.
+* **IAM:** User with minimal `PutObject` permissions.
+
+### 3. Validation
+* **Type:** Only `image/jpeg` and `image/png`.
+* **Size:** Max 2MB.
+
+### 4. Lifecycle (Reflection)
+In a real app, I would enable **S3 Lifecycle Rules** to automatically move old uploads to "Glacier" storage (cheaper) or delete temporary files after 30 days to save costs.
