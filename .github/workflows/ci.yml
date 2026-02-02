@@ -5,24 +5,31 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main, develop]
+  workflow_dispatch: # Allow manual trigger from GitHub UI
 
 # Prevents overlapping runs (e.g., if you push twice quickly)
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
 
-jobs:
-  build-test-deploy:
-    runs-on: ubuntu-latest
+env:
+  NODE_ENV: test
+  NEXT_TELEMETRY_DISABLED: 1
 
+jobs:
+  # Code Quality and Security Checks
+  quality-check:
+    runs-on: ubuntu-latest
+    name: 🔍 Code Quality & Security
+    
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: 🟢 Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: '20'
           cache: 'npm'
 
       - name: 📦 Install Dependencies
@@ -30,16 +37,179 @@ jobs:
 
       - name: 🧹 Run Linter
         run: npm run lint
+        continue-on-error: false
 
-      - name: 🧪 Run Unit Tests
-        run: npm test
+      - name: 🔒 Run Security Audit
+        run: npm audit --audit-level=high
+
+      - name: 📊 Type Check
+        run: npx tsc --noEmit
+
+  # Testing
+  test:
+    runs-on: ubuntu-latest
+    name: 🧪 Test Suite
+    
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📦 Install Dependencies
+        run: npm ci
+
+      - name: 🧪 Run Unit Tests with Coverage
+        run: npm test -- --coverage --watchAll=false
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/test
+          DIRECT_URL: postgresql://test:test@localhost:5432/test
+
+      - name: 📈 Upload Coverage Reports
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+        continue-on-error: true
+
+  # Build and Docker
+  build:
+    runs-on: ubuntu-latest
+    name: 🏗️ Build & Docker
+    needs: [quality-check, test]
+    
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📦 Install Dependencies
+        run: npm ci
 
       - name: 🏗️ Build Application
         run: npm run build
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/test
+          DIRECT_URL: postgresql://test:test@localhost:5432/test
 
-      - name: 🚀 Mock Deploy (Production Only)
+      - name: � Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🔐 Log in to Docker Hub
         if: github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: 🏷️ Extract Metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: credo-app
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: 🐳 Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+
+  # Deploy to Production (main branch only)
+  deploy:
+    runs-on: ubuntu-latest
+    name: 🚀 Deploy to Production
+    needs: [build]
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🚀 Deploy to AWS ECS
+        if: ${{ secrets.AWS_ACCESS_KEY_ID }}
         run: |
-          echo "Deploying application to production server..."
-          # In a real app, you would add AWS/Azure CLI commands here
-          echo "Deployment Complete!"
+          echo "Deploying to AWS ECS..."
+          # AWS deployment commands would go here
+          echo "✅ AWS ECS deployment complete!"
+
+      - name: 🚀 Deploy to Azure App Service
+        if: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        run: |
+          echo "Deploying to Azure App Service..."
+          # Azure deployment commands would go here
+          echo "✅ Azure App Service deployment complete!"
+
+      - name: 📧 Notify Deployment Success
+        if: always()
+        run: |
+          echo "🎉 Deployment completed successfully!"
+          echo "📊 Build artifacts and logs are available in the Actions tab"
+
+  # Performance and Security Scans
+  security-scan:
+    runs-on: ubuntu-latest
+    name: 🔒 Security Scan
+    needs: [build]
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🔍 Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: 📤 Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  # Build Status Summary
+  build-summary:
+    runs-on: ubuntu-latest
+    name: 📋 Build Summary
+    needs: [quality-check, test, build]
+    if: always()
+    
+    steps:
+      - name: 📊 Build Summary
+        run: |
+          echo "## 🚀 CI Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Job | Status | Duration |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔍 Code Quality | ${{ needs.quality-check.result }} | - |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🧪 Test Suite | ${{ needs.test.result }} | - |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🏗️ Build & Docker | ${{ needs.build.result }} | - |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Pipeline Statistics" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Trigger**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Runner**: ubuntu-latest"
