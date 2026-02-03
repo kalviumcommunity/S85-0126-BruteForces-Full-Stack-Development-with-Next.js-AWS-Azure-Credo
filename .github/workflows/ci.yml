@@ -6,15 +6,19 @@ on:
   pull_request:
     branches: [main, develop]
   workflow_dispatch: # Allow manual trigger from GitHub UI
+  schedule:
+    # Run daily at 2 AM UTC for security checks
+    - cron: '0 2 * * *'
 
 # Prevents overlapping runs (e.g., if you push twice quickly)
 concurrency:
-  group: ${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
   NODE_ENV: test
   NEXT_TELEMETRY_DISABLED: 1
+  CI: true
 
 jobs:
   # Code Quality and Security Checks
@@ -190,11 +194,50 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
 
+  # Performance Monitoring
+  performance-check:
+    runs-on: ubuntu-latest
+    name: ⚡ Performance Check
+    needs: [build]
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📦 Install Dependencies
+        run: npm ci
+
+      - name: 🏗️ Build Application
+        run: npm run build
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/test
+          DIRECT_URL: postgresql://test:test@localhost:5432/test
+
+      - name: 📊 Analyze Bundle Size
+        uses: preactjs/compressed-size-action@v2
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          pattern: "./.next/static/chunks/*.js"
+
+      - name: ⚡ Lighthouse CI
+        run: |
+          npm install -g @lhci/cli@0.12.x
+          lhci autorun
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
   # Build Status Summary
   build-summary:
     runs-on: ubuntu-latest
     name: 📋 Build Summary
-    needs: [quality-check, test, build]
+    needs: [quality-check, test, build, performance-check]
     if: always()
     
     steps:
@@ -207,9 +250,13 @@ jobs:
           echo "| 🔍 Code Quality | ${{ needs.quality-check.result }} | - |" >> $GITHUB_STEP_SUMMARY
           echo "| 🧪 Test Suite | ${{ needs.test.result }} | - |" >> $GITHUB_STEP_SUMMARY
           echo "| 🏗️ Build & Docker | ${{ needs.build.result }} | - |" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ needs.performance-check.result }}" != "skipped" ]; then
+            echo "| ⚡ Performance | ${{ needs.performance-check.result }} | - |" >> $GITHUB_STEP_SUMMARY
+          fi
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 📊 Pipeline Statistics" >> $GITHUB_STEP_SUMMARY
           echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Trigger**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Runner**: ubuntu-latest"
+          echo "- **Runner**: ubuntu-latest" >> $GITHUB_STEP_SUMMARY
+          echo "- **Timestamp**: $(date -u)" >> $GITHUB_STEP_SUMMARY
