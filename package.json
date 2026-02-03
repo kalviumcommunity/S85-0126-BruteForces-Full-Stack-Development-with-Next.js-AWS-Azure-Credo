@@ -12,7 +12,10 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "type-check": "tsc --noEmit",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "lhci": "lhci autorun",
+    "analyze": "ANALYZE=true npm run build",
+    "bundle-analyzer": "npx @next/bundle-analyzer"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.978.0",
@@ -35,6 +38,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
+    "@lhci/cli": "^0.12.0",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^14.2.1",
     "@testing-library/user-event": "^14.5.2",

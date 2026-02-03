@@ -4,7 +4,25 @@ This document outlines the comprehensive Continuous Integration (CI) pipeline im
 
 ## 🎯 Overview
 
-The CI pipeline automates code quality checks, testing, building, and deployment processes to ensure every code change is validated before merging to production.
+The CI pipeline automates code quality checks, testing, building, performance monitoring, and deployment processes to ensure every code change is validated before merging to production.
+
+## 🚀 Latest Updates
+
+### Enhanced Performance Monitoring
+- **Lighthouse CI Integration**: Automated performance testing with Lighthouse
+- **Bundle Size Analysis**: Track JavaScript bundle size changes
+- **Performance Thresholds**: Enforce minimum performance scores
+- **Real-time Monitoring**: Performance metrics in pull requests
+
+### Improved Scheduling
+- **Daily Security Scans**: Automated security vulnerability checks
+- **Scheduled Runs**: Cron-based execution at 2 AM UTC
+- **Proactive Monitoring**: Early detection of security issues
+
+### Enhanced Concurrency
+- **Workflow-level Concurrency**: Better resource management
+- **Smart Cancellation**: Prevents redundant builds
+- **Optimized Resource Usage**: Faster feedback loops
 
 ## 📁 Workflow Location
 
