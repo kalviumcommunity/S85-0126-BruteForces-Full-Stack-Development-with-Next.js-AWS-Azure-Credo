@@ -1,669 +1,160 @@
-# 🚀 Credo
+# 🛡️ Project Credo
 
-### Lightweight Digital Credibility for Small Businesses
+### Digital Identity for Local Heroes
 
-Credo is a **trust-first digital credibility platform** designed for small-scale entrepreneurs who lack access to traditional verification systems. Instead of forcing heavy KYC or document-based onboarding, Credo enables **organic trust-building** through community validation, reputation signals, and consistent behavior.
+Small-scale entrepreneurs form the backbone of local economies, yet millions lack a **formal digital identity**.
+**Credo** bridges this gap by creating **trust through community**, not paperwork.
 
-> **Trust is earned over time — not forced upfront.**
-
----
-
-## 🧠 Problem Statement
-
-Small businesses such as **street vendors, freelancers, and micro-entrepreneurs** often struggle with:
-
-* ❌ No verified digital identity
-* ❌ Customer trust issues
-* ❌ Exclusion due to heavy KYC requirements
-* ❌ No simple way to prove authenticity online
-
-### ❓ Core Question
-
-**How can we establish trust without intimidating or excluding users?**
-
-## 💡 Solution Overview
-
-Credo introduces a **low-friction credibility layer** that allows businesses to:
-
-* Onboard with **minimal details**
-* Build reputation **gradually over time**
-* Gain trust through **real interactions & endorsements**
-* Share a **public credibility profile**
-
-Credo replaces paperwork-based verification with **behavior-based trust**.
+We replace traditional KYC with **Proof of Activity** — verified by peers, transactions, and physical presence.
 
 ---
 
-## ✨ Key Features
+## 📊 The Concept: Social & Transactional KYC
 
-### 🔐 Low-Friction Onboarding
+Traditional KYC systems rely on:
 
-* No document uploads
-* No long verification queues
+* Government-issued IDs
+* Lengthy approval processes
+* Centralized authorities
 
-### 🪪 Credibility Profiles
+This creates friction for the **“missing middle”** — informal but legitimate businesses.
 
-* Public, shareable profiles
-* Displays trust signals and activity
+### 🔁 Credo’s Alternative
 
-### 🌐 Community-Based Validation
+Instead of plastic IDs, Credo uses:
 
-* Reviews
-* Endorsements
-* Interaction history
+* **Peer vouching**
+* **Location verification**
+* **Community reputation**
 
-### 📈 Credo Score
-
-* Dynamic reputation score
-* Based on behavior, not documents
-
-### 🧩 Scalable & Inclusive
-
-* Built for local vendors
-* Ideal for freelancers and early-stage entrepreneurs
+Trust is **earned**, **visible**, and **progressive**.
 
 ---
 
-## 🏗️ High-Level Workflow
+## 🏗️ Technical Architecture
 
-1. User signs up with minimal information
-2. Credo profile is created
-3. Trust signals are collected:
+Credo is built using a **modern, serverless, real-time stack** optimized for performance, scalability, and security.
 
-   * Reviews
-   * Endorsements
-   * Activity consistency
-4. Credo Score improves over time
-5. Profile can be shared publicly via:
-
-   * Link
-   * QR Code
-
-
-## 🛠️ Tech Stack
-
-| Layer    | Technology                       |
-| -------- | -------------------------------- |
-| Frontend | Next.js (App Router), TypeScript |
-| Backend  | Next.js API Routes               |
-| Database | PostgreSQL                       |
-| ORM      | Prisma                           |
-| Auth     | Lightweight identity (Non-KYC)   |
-| Tooling  | ESLint, Prettier, Husky          |
+| Layer    | Technology              | Purpose                                   |
+| -------- | ----------------------- | ----------------------------------------- |
+| Frontend | Next.js 15 (App Router) | SEO-friendly public profiles & dashboard  |
+| Database | PostgreSQL (Supabase)   | Relational storage for profiles & vouches |
+| ORM      | Prisma                  | Type-safe database queries                |
+| Auth     | Supabase Auth           | Secure merchant onboarding                |
+| Scanner  | html5-qrcode            | Mobile-first physical verification        |
 
 ---
 
-## 🗄️ Database Schema
+## ⚖️ TrustScore Algorithm
 
-### (PostgreSQL + Prisma)
+The **TrustScore** is the core of Credo’s identity system.
+It is a **weighted reputation score** built from community actions.
 
-### 📦 Core Entities
+### 🧮 Scoring Rules
 
-* **User**
-* **Business**
-* **Review**
-* **Endorsement**
+* **Vouch from Basic Merchant** → `+10 points`
+* **Vouch from Verified Merchant** → `+50 points`
+* **Location-Verified Vouch** → `1.5× multiplier`
+  *(using browser Geolocation API)*
 
-### 🔗 Relationships
-
-* One **User → Many Businesses**
-* One **Business → Many Reviews**
-* One **Business → Many Endorsements**
-
-### 🔐 Constraints
-
-* Unique email per user
-* Review rating constrained between **1–5**
-* `ON DELETE CASCADE` for relational cleanup
-* Indexed foreign keys for performance
-
-### 🧮 Normalization
-
-* Follows **1NF, 2NF, 3NF**
-* No redundant or derived fields
-* Clear ownership of attributes
+Scores update in real time and directly affect merchant visibility and status.
 
 ---
 
-## 🔗 RESTful API Design
+## 🏷️ Achievement Tiers
 
-### (Next.js App Router)
+Merchants progress through tiers as trust grows.
 
-Credo follows REST principles using **file-based routing** under `app/api/`.
+| Tier | Name           | Points Range | Description         |
+| ---- | -------------- | ------------ | ------------------- |
+| 🟤   | Basic Tier     | 0 – 100      | Unverified merchant |
+| 🥈   | Community Tier | 101 – 500    | Vouched by 3+ peers |
+| 🥇   | Verified Tier  | 500+         | High-trust merchant |
 
-### 📂 Folder Structure
-
-```
-app/
- └── api/
-     ├── users/
-     │   └── route.ts
-     ├── businesses/
-     │   ├── route.ts
-     │   └── [id]/
-     │       └── route.ts
-     ├── reviews/
-     │   └── route.ts
-     └── endorsements/
-         └── route.ts
-```
+Tier status is **publicly visible** on profiles.
 
 ---
 
-## 📡 API Endpoints
+## 🚀 Getting Started
 
-### 👤 Users
+### 1️⃣ Setup Environment
 
-| Method | Endpoint   | Description       |
-| ------ | ---------- | ----------------- |
-| GET    | /api/users | Get all users     |
-| POST   | /api/users | Create a new user |
-
-### 🏢 Businesses
-
-| Method | Endpoint            | Description        |
-| ------ | ------------------- | ------------------ |
-| GET    | /api/businesses     | Get all businesses |
-| POST   | /api/businesses     | Create a business  |
-| GET    | /api/businesses/:id | Get business by ID |
-| PUT    | /api/businesses/:id | Update business    |
-| DELETE | /api/businesses/:id | Delete business    |
-
-### ⭐ Reviews
-
-| Method | Endpoint     | Description   |
-| ------ | ------------ | ------------- |
-| POST   | /api/reviews | Add review    |
-| GET    | /api/reviews | Fetch reviews |
-
-### 🤝 Endorsements
-
-| Method | Endpoint          | Description        |
-| ------ | ----------------- | ------------------ |
-| POST   | /api/endorsements | Endorse a business |
-
----
-
-## 🧪 Example API Usage
-
-### GET Users
+Create a `.env.local` file:
 
 ```bash
-curl -X GET http://localhost:3000/api/users
+NEXT_PUBLIC_SUPABASE_URL=your_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+DATABASE_URL=your_postgresql_url
 ```
 
-### POST User
+---
+
+### 2️⃣ Initialize Database
 
 ```bash
-curl -X POST http://localhost:3000/api/users \
--H "Content-Type: application/json" \
--d '{"name":"Alice","email":"alice@example.com"}'
+npm install
+npx prisma generate
+npx prisma db push
 ```
 
 ---
 
-## 📄 Pagination Example
+### 3️⃣ Run Development
 
-```ts
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const page = Number(searchParams.get('page')) || 1;
-  const limit = Number(searchParams.get('limit')) || 10;
+```bash
+npm run dev
+```
 
-  return NextResponse.json({
-    page,
-    limit,
-    data: []
-  });
-}
+App runs on:
+
+```
+http://localhost:3000
 ```
 
 ---
 
-## ⚠️ Error Handling & Status Codes
+## 🛠️ Key Features Built
 
-| Code | Meaning               |
-| ---- | --------------------- |
-| 200  | OK                    |
-| 201  | Created               |
-| 400  | Bad Request           |
-| 404  | Not Found             |
-| 500  | Internal Server Error |
+✅ **Dynamic QR Generation**
+Every business receives a unique, printable Credo Identity Card.
 
-```ts
-if (!business) {
-  return NextResponse.json(
-    { error: "Business not found" },
-    { status: 404 }
-  );
-}
+✅ **Real-Time Scanner**
+Merchants can vouch for each other via mobile camera.
+
+✅ **Public Trust Profiles**
+Shareable links like:
+
+```
+/p/jakes-coffee
 ```
 
----
-
-## 🌐 Global API Response Handler
-
-### ✅ Success Response
-
-```json
-{
-  "success": true,
-  "message": "Operation successful",
-  "data": { "id": 1, "name": "Alice" },
-  "timestamp": "2023-10-27T10:00:00Z"
-}
-```
-
-### ❌ Error Response
-
-```json
-{
-  "success": false,
-  "message": "Validation Error",
-  "errors": [
-    { "field": "email", "message": "Invalid email address" }
-  ]
-}
-```
+✅ **Secure Middleware**
+Protected dashboard access for registered entrepreneurs only.
 
 ---
 
-## 🛡️ Input Validation with Zod
+## 🛤️ Future Roadmap
 
-All `POST` and `PUT` API routes use **Zod** for strict input validation.
-
-### 📁 Schemas (`src/lib/schemas/`)
-
-* **User Schema** → name, email, age
-* **Task Schema** → title, completion status
-* **Project Schema** → project title
-* **Auth Schema** → login & signup credentials
+* [ ] AI Storefront Analysis – Verify legitimacy via photo analysis
+* [ ] Micro-Lending Integration – Connect verified merchants to lenders
+* [ ] Batch Vouching – Verify entire marketplaces or shop clusters
 
 ---
 
-## 👥 Team
+## 💡 Vision
 
-* **Vansh Thapar**
-* **Rishiraj Singh**
-* **Moksh Sharma**
+Credo is not just KYC.
 
----
+It is a **community-powered trust layer** that unlocks:
 
-## 🌱 Vision
+* Financial access
+* Digital presence
+* Economic credibility
 
-Credo aims to become a **universal trust layer** for the informal economy — empowering millions of small businesses to establish credibility, unlock opportunities, and grow without exclusion.
-
-
-In this lesson, you’ll learn how to build authorization middleware to protect routes based on user roles and active sessions in your Next.js application. While authentication verifies who the user is, authorization ensures what that user is allowed to do - forming the foundation of Role-Based Access Control (RBAC) in modern web apps.
-
-By the end of this lesson, you’ll have a reusable middleware that validates JWTs, checks user roles, and enforces the principle of least privilege across your API routes.
-
-Please note that you may build your project based on your own customisations, but follow this structure for uniformity.
-
-1. Understanding Authentication vs Authorization
-Before diving into code, let’s clarify these concepts again:
-
-Concept	Description	Example
-Authentication	Confirms who the user is.	User logs in with valid credentials.
-Authorization	Determines what actions they can perform.	Only admins can delete users.
-In this lesson, we’ll focus on authorization, building middleware that protects routes according to role and session validity.
-
-2. Setting Up User Roles
-Start by defining user roles in your database model. If you’re using Prisma, modify your User model as follows:
-
-model User {
-  id       Int     @id @default(autoincrement())
-  name     String
-  email    String  @unique
-  password String
-  role     String  @default("user") // e.g., "admin", "user"
-}
-This allows the backend to assign different permissions based on roles.
-
-3. Designing Middleware Folder Structure
-Inside your Next.js app/ directory, create a middleware file at the root level:
-
-app/
- ├── api/
- │    ├── auth/
- │    ├── users/
- │    └── admin/
- ├── middleware.ts
-This middleware will intercept all incoming requests and validate authorization before routing them.
-
-4. Implementing Authorization Middleware
-Create the file app/middleware.ts with the following logic:
-
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import jwt from "jsonwebtoken";
-
-const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey";
-
-export function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
-
-  // Only protect specific routes
-  if (pathname.startsWith("/api/admin") || pathname.startsWith("/api/users")) {
-    const authHeader = req.headers.get("authorization");
-    const token = authHeader?.split(" ")[1];
-
-    if (!token) {
-      return NextResponse.json({ success: false, message: "Token missing" }, { status: 401 });
-    }
-
-    try {
-      const decoded: any = jwt.verify(token, JWT_SECRET);
-
-      // Role-based access control
-      if (pathname.startsWith("/api/admin") && decoded.role !== "admin") {
-        return NextResponse.json({ success: false, message: "Access denied" }, { status: 403 });
-      }
-
-      // Attach user info for downstream handlers
-      const requestHeaders = new Headers(req.headers);
-      requestHeaders.set("x-user-email", decoded.email);
-      requestHeaders.set("x-user-role", decoded.role);
-
-      return NextResponse.next({ request: { headers: requestHeaders } });
-    } catch {
-      return NextResponse.json({ success: false, message: "Invalid or expired token" }, { status: 403 });
-    }
-  }
-
-  return NextResponse.next();
-}
-Key Idea: This middleware intercepts requests, validates the JWT, and restricts access based on user role — ensuring secure, consistent checks across all routes.
-
-5. Example: Protected Admin Route
-File: app/api/admin/route.ts
-import { NextResponse } from "next/server";
-
-export async function GET() {
-  return NextResponse.json({ success: true, message: "Welcome Admin! You have full access." });
-}
-File: app/api/users/route.ts
-import { NextResponse } from "next/server";
-
-export async function GET() {
-  return NextResponse.json({ success: true, message: "User route accessible to all authenticated users." });
-}
-6. Testing Role-Based Access
-Admin Access
-curl -X GET http://localhost:3000/api/admin \
--H "Authorization: Bearer <ADMIN_JWT>"
-Response: { "success": true, "message": "Welcome Admin! You have full access." }
-
-Regular User Access
-curl -X GET http://localhost:3000/api/admin \
--H "Authorization: Bearer <USER_JWT>"
-Response: { "success": false, "message": "Access denied" }
-
-7. Reflect and Document in README
-Your README.md should include:
-
-Clear diagram or flow showing how middleware intercepts requests and enforces role-based rules.
-
-Sample allowed vs denied logs from Postman.
-
-Explanation of:
-
-JWT verification in middleware.
-Role-based logic for admin/user.
-Least privilege principle — users should only have access to necessary routes.
-How future roles (e.g., editor, moderator) can be easily added.
-Deliverables
-Reusable middleware that validates JWTs and enforces RBAC across routes.
-
-At least two protected routes: one general (/api/users), one admin-only (/api/admin).
-
-A documented README containing:
-
-Middleware logic overview.
-Role checks and access outcomes.
-Screenshots/logs of successful and failed access attempts.
-Reflection on least-privilege and role extensibility.
-Pro Tip: “Authorization isn’t just about blocking users — it’s about designing trust boundaries that scale with your application’s growth.”
----High-level idea
-
-Middleware acts like a security checkpoint that every request must pass before it reaches your API routes.
-
-Instead of checking permissions inside every route, you:
-
-Centralize security
-
-Apply rules consistently
-
-Avoid duplicated logic
-
-
-
-### ⭐ If you believe trust should be inclusive — Credo is for you.
-
-## 🚀 Redis Caching Layer
-
-Credo integrates **Redis** as a caching layer to improve API performance and reduce database load for frequently accessed data.
-
-### 🔁 Cache Strategy (Cache-Aside Pattern)
-
-Credo uses the **cache-aside (lazy loading)** strategy:
-
-1. API checks Redis cache first
-2. If cache hit → data is returned instantly
-3. If cache miss → data is fetched from PostgreSQL using Prisma
-4. The result is stored in Redis for subsequent requests
-
-This ensures optimal performance while keeping the database load minimal.
+Built **by the community, for the community**.
 
 ---
 
-### ⏳ TTL (Time-To-Live) Policy
+## 📜 License
 
-Cached data is stored with a TTL of **60 seconds**:
-
-```ts
-await redis.set("users:list", JSON.stringify(users), "EX", 60);
-
-
-
-# 🌍 Global State Management
-
-This project demonstrates Global State management using React Context API and Custom Hooks in Next.js.
-
-## 🏗 Architecture
-We use a **Provider Pattern** to wrap the application and **Custom Hooks** to consume state.
-
-### File Structure
-* `context/`: Contains the Context definitions and Providers (`AuthContext`, `UIContext`).
-* `hooks/`: Custom hooks (`useAuth`, `useUI`) that wrap `useContext` for cleaner access.
-* `app/layout.tsx`: Root layout that nests the providers.
-
-### 🔄 State Flow
-1. **AuthContext**: Manages `user` object and `login`/`logout` functions.
-2. **UIContext**: Manages `theme` (light/dark) and `sidebar` visibility.
-3. **Consumers**: Components use `useAuth()` to get the current user or `useUI()` to toggle themes.
-
-## 🚀 How to Test
-1. **Login**: Click "Login as Student". The status changes to "AUTHENTICATED" and the user name appears. Check console for `✅ User logged in`.
-2. **Theme**: Click "Switch to Dark". The entire background turns dark slate.
-3. **Sidebar**: Toggle the switch. The state updates to "Open/Closed".
-
-## 🧠 Reflection
-* **Scalability**: Using Context avoids "prop-drilling" (passing data through 5+ layers of components).
-* **Performance**: We split `Auth` and `UI` into separate contexts. This ensures that updating the *Sidebar* does not trigger a re-render in components that only care about the *User*.  
-* 
-* # Credo - Responsive & Themed Design Assignment
-
-## 🎨 Tailwind Configuration Summary
-I have configured Tailwind to support a custom design system and dark mode switching.
-
-### Custom Breakpoints
-| Breakpoint | Width  | Usage |
-|:----------:|:------:|:----- |
-| `sm`       | 640px  | Mobile landscape |
-| `md`       | 768px  | Tablets (Grid changes to 2 columns) |
-| `lg`       | 1024px | Laptops (Grid changes to 3 columns) |
-| `xl`       | 1280px | Large Desktops |
-
-### Theme Tokens (Brand Colors)
-| Token Name      | Hex Code  | Visual |
-|:---------------|:---------:|:------:|
-| `brand-light`   | `#93C5FD` | Light Blue |
-| `brand-DEFAULT` | `#3B82F6` | Primary Blue |
-| `brand-dark`    | `#1E40AF` | Deep Blue |
-
-## 📱 Responsiveness Evidence
-- **Mobile:** Single column layout, larger touch targets.
-- **Tablet:** 2-column grid, adjusted padding.
-- **Desktop:** 3-column grid, expansive hero section.
-
-## 🌗 Theme Reflection & Accessibility
-- **Contrast:** I utilized `slate-950` for dark mode backgrounds and `gray-50` for light mode to ensure text remains readable. High contrast colors (Yellow/Green) were used for ratings/scores.
-- **Toggle:** Implemented using `localStorage` persistence so the user's preference is remembered.
-- **Challenges:** Balancing the "Cyber-Punk" aesthetic of the original dark mode with a clean, professional light mode required careful use of CSS variables in `globals.css`.
-
-## 🚀 How to Run
-1. `npm install`
-2. `npx prisma generate`
-3. `npm run dev`
-
-
-## 📝 Form Handling with React Hook Form & Zod
-
-I have implemented a robust form validation system that ensures data integrity and user feedback.
-
-### 1. Architecture
-* **Library:** `react-hook-form` manages form state to minimize re-renders (unlike `useState` which re-renders on every keystroke).
-* **Validation:** `zod` defines the schema. If requirements change (e.g., password length), I update it in **one place** (`signupSchema.ts`).
-* **Integration:** `@hookform/resolvers` connects Zod to the form hook.
-
-### 2. Component Structure
-* `schemas/signupSchema.ts`: Defines rules (min length, regex for passwords).
-* `components/FormInput.tsx`: A reusable wrapper that handles labels, inputs, and error display logic.
-* `app/signup/page.tsx`: The main page that composes the form.
-
-### 3. Reflection
-Using **Zod** separates validation logic from UI code. In a large app, this means I can reuse the exact same schema for **Backend API validation** and **Frontend Form validation**, ensuring total consistency across the stack.
-
-
-
-## 🛡️ Input Sanitization & OWASP Compliance
-
-I have implemented security utilities to prevent Cross-Site Scripting (XSS) and SQL Injection.
-
-### 1. Implementation
-* **Library:** `sanitize-html` removes unsafe HTML tags from user input.
-* **Utility:** `src/lib/sanitize.ts` serves as a centralized cleaner function.
-* **Flow:** Input -> API -> `sanitizeInput()` -> Database.
-
-### 2. XSS Prevention Example
-* **Attack:** `<script>alert('Hacked')</script>`
-* **Result:** `""` (Empty string, script removed)
-* **Attack:** `<b>Hello</b>`
-* **Result:** `Hello` (Tags stripped, text preserved)
-
-### 3. SQL Injection (SQLi)
-* **Strategy:** I use **Prisma ORM**.
-* **Why it works:** Prisma uses **Parameterized Queries** by default. It treats user input as data, not executable code.
-* **Example:** `db.users.findFirst({ where: { name: req.body.name } })` is safe even if `name` contains `' OR 1=1`.
-
-### 4. Reflection
-Sanitization is critical because "Trusting User Input" is the #1 vulnerability in web apps. By enforcing cleaning at the API entry point, we protect both the database integrity and frontend users from malicious scripts.
-
-## ⚡ Error & Loading States
-
-I have implemented advanced UX patterns to handle asynchronous data states gracefully.
-
-### 1. Loading UI (`loading.tsx`)
-* **Purpose:** Prevents "Layout Shift" and blank screens while data fetches.
-* **Implementation:** Uses a Skeleton Loader with Tailwind's `animate-pulse` to mimic the shape of the final content.
-* **Location:** `src/app/dashboard/loading.tsx`
-
-### 2. Error Boundary (`error.tsx`)
-* **Purpose:** Catches runtime errors preventing the entire app from crashing (White Screen of Death).
-* **Implementation:** A Client Component that catches errors and provides a `reset()` button to attempt recovery without a full page reload.
-* **Location:** `src/app/dashboard/error.tsx`
-
-### 3. Resilience Strategy
-By using these Next.js file conventions, the app is resilient. Even if the Dashboard crashes, the Navigation bar and Sidebar (defined in `layout.tsx`) remain interactive, allowing the user to navigate away.
-
-## 🔒 Security & Headers Implementation
-
-To secure the application against common web vulnerabilities, we have enforced strict HTTP headers globally via `next.config.mjs`.
-
-### 1. HSTS (HTTP Strict Transport Security)
-* **Configuration:** `max-age=63072000; includeSubDomains; preload`
-* **Purpose:** Forces the browser to refuse any connection that isn't HTTPS. This mitigates Man-in-the-Middle (MITM) attacks.
-
-### 2. CSP (Content Security Policy)
-* **Configuration:** Restricts sources for scripts, styles, and images.
-* **Exceptions:** Added `grainy-gradients.vercel.app` to `img-src` to allow the background texture to load securely.
-
-### 3. CORS (Cross-Origin Resource Sharing)
-* **Configuration:** API routes (`/api/*`) are configured to allow standard methods (`GET`, `POST`, etc.) but restrict headers to prevent unauthorized external triggers.
-
-### Verification
-You can verify these headers by inspecting the network response in Chrome DevTools:
-1. Open DevTools -> **Network** tab.
-2. Refresh the page.
-3. Click the first document request (e.g., `localhost`).
-4. Look under **"Response Headers"** to see `Strict-Transport-Security` and `Content-Security-Policy`.
-
-
-## 🏗 Layout & Component Architecture
-
-I have implemented a modular component system to ensure scalability and consistency.
-
-### 1. Component Hierarchy
-* **RootLayout**: Wraps the entire app.
-* **LayoutWrapper**: Manages the grid structure (Header + Sidebar + Main Content).
-* **UI Components**: Atomic elements like `<Button />` used inside pages.
-
-### 2. File Structure
-* `src/components/layout/`: Header, Sidebar, Wrapper
-* `src/components/ui/`: Reusable atoms (Buttons, Inputs)
-* `src/components/index.ts`: Barrel file for clean imports
-
-### 3. Reusability Strategy
-* **Props Contract**: The `Button` component accepts a `variant` prop ('primary' | 'secondary'), allowing us to change the visual style without rewriting CSS.
-* **Consistency**: By using `LayoutWrapper`, every new page automatically inherits the navigation and sidebar, preventing layout shifts.
-
-### 4. Component Preview
-Visit `/design-system` to see the isolated components in action.
-
-
-## ☁️ AWS S3 File Upload
-
-I have implemented a secure **Direct-to-S3** upload flow using Presigned URLs.
-
-### 1. Architecture
-* **Frontend:** Selects file -> Requests URL from API -> Puts file to S3.
-* **Backend:** Generates a secure, temporary Presigned URL using AWS SDK v3.
-* **Security:** AWS Credentials are NEVER exposed to the client. The frontend only sees a temporary URL valid for 60 seconds.
-
-### 2. AWS Setup
-* **Bucket:** Private bucket with CORS enabled for `localhost:3000`.
-* **IAM:** User with minimal `PutObject` permissions.
-
-### 3. Validation
-* **Type:** Only `image/jpeg` and `image/png`.
-* **Size:** Max 2MB.
-
-### 4. Lifecycle (Reflection)
-In a real app, I would enable **S3 Lifecycle Rules** to automatically move old uploads to "Glacier" storage (cheaper) or delete temporary files after 30 days to save costs.
-
-## 🚀 CI/CD Pipeline
-
-We utilize **GitHub Actions** to automate our integration and deployment workflow.
-
-**Workflow File:** `.github/workflows/ci.yml`
-
-### ⚙️ Stages
-1.  **Lint:** Checks code quality using ESLint.
-2.  **Test:** Runs unit tests (configured to pass for CI demonstration).
-3.  **Build:** Compiles the Next.js application to ensure no build errors.
-4.  **Deploy:** A conditional step that runs only on the `main` branch to simulate deployment.
-
-### ⚡ Optimization
-* **Caching:** We use `actions/setup-node` with npm caching to speed up dependency installation.
-* **Concurrency:** Configured to cancel outdated runs if a new commit is pushed to the same branch, saving CI minutes.
+MIT License
