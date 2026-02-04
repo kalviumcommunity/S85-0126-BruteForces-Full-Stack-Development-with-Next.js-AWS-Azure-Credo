@@ -58,6 +58,10 @@ export async function signUpBusiness(prevState: SignupState, formData: FormData)
     });
 
     if (authError) {
+      console.error("Supabase Auth Error:", authError);
+      if (authError.message.includes('rate limit')) {
+        return { message: "Too many attempts. Please wait a moment or check your Supabase Email settings." };
+      }
       return { message: authError.message };
     }
 

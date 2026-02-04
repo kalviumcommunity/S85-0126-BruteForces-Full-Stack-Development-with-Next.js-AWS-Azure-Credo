@@ -2,14 +2,42 @@
 
 import React, { useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import { useRouter } from 'next/navigation';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { Mail, Lock, Loader2, ArrowRight, ShieldCheck } from 'lucide-react';
 
-// Helper components if Shadcn not fully installed
-const UI_Input = (props: any) => <input className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 disabled:cursor-not-allowed disabled:opacity-50" {...props} />;
-const UI_Button = (props: any) => <button className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 disabled:pointer-events-none disabled:opacity-50 bg-slate-900 text-slate-50 hover:bg-slate-900/90 h-10 px-4 py-2 w-full" {...props} />;
+const Card = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+  <div className={`bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden ${className}`}>
+    {children}
+  </div>
+);
+
+const Input = ({ icon: Icon, ...props }: React.InputHTMLAttributes<HTMLInputElement> & { icon?: React.ElementType }) => (
+  <div className="relative group">
+    {Icon && (
+      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors">
+        <Icon size={18} />
+      </div>
+    )}
+    <input
+      {...props}
+      className={`w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-slate-800 placeholder:text-slate-400 text-sm ${
+        Icon ? 'pl-10' : ''
+      } ${props.className || ''}`}
+    />
+  </div>
+);
+
+const Button = ({ children, isLoading, className = "", ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { isLoading?: boolean }) => (
+  <button
+    disabled={isLoading || props.disabled}
+    className={`w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-medium py-3 px-4 rounded-lg transition-all flex items-center justify-center space-x-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-indigo-600/20 ${className}`}
+    {...props}
+  >
+    {isLoading && <Loader2 size={18} className="animate-spin" />}
+    <span>{children}</span>
+  </button>
+);
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -17,8 +45,9 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const signedUp = searchParams.get('signedUp');
 
-  // Initialize Supabase Client for creating sessions
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -35,28 +64,16 @@ export default function LoginPage() {
         password,
       });
 
-      if (error) {
-        throw error;
+      if (error) throw error;
+      if (!data.session) throw new Error("No session created");
+
+      const projectRef = process.env.NEXT_PUBLIC_SUPABASE_URL!.match(/https:\/\/(.*)\.supabase\.co/)?.[1] || "";
+      if (projectRef) {
+          const cookieName = `sb-${projectRef}-auth-token`;
+           document.cookie = `${cookieName}=true; path=/; max-age=${data.session.expires_in}; SameSite=Lax; Secure`;
       }
 
-      // Session is handled by Supabase client (local storage)
-      // BUT for middleware to see it, we need it in cookies.
-      // Valid Supabase + Next.js setup uses auth-helpers to sync this automatically.
-      // If manually: The client sets the cookie. 
-      // Supabase-js v2 doesn't automatically set cookies for Next.js server components unless configured with cookie storage.
-      
-      // For this simplified setup, we rely on the client-side session or we force a reload/redirect
-      // where the middleware might catch us.
-      
-      // In a real app: use `createClientComponentClient` from @supabase/auth-helpers-nextjs
-      // which handles the cookie sync.
-      
-      // Assuming 'sb-[ref]-auth-token' is set by the client library by default if storage is valid,
-      // or we just redirect and hope the middleware (which checks cookies) sees it.
-      
-      // If it fails, the user needs to install the helper packages.
-      // We will refresh the page to ensure cookies are sent.
-      router.refresh(); 
+      router.refresh();
       router.push('/dashboard');
 
     } catch (err: any) {
@@ -66,63 +83,87 @@ export default function LoginPage() {
     }
   };
 
-  const InputComp = (globalThis as any).Input || UI_Input;
-  const ButtonComp = (globalThis as any).Button || UI_Button;
-
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-xl shadow-lg border border-slate-100">
-        <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-slate-900">Welcome Back</h2>
-          <p className="mt-2 text-sm text-slate-600">
-            Sign in to manage your Trust Profile
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50/50 flex flex-col items-center justify-center p-4">
+      <div className="mb-8 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-xl shadow-indigo-600/20">
+          <ShieldCheck className="text-white" size={24} />
         </div>
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Credo</h1>
+        <p className="text-slate-500 text-sm mt-1">Trust, verified.</p>
+      </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email Address</label>
-              <InputComp 
-                id="email" 
-                type="email" 
-                required 
-                value={email}
-                onChange={(e: any) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-              <InputComp 
-                id="password" 
-                type="password" 
-                required 
-                value={password}
-                onChange={(e: any) => setPassword(e.target.value)}
-              />
-            </div>
+      <Card className="w-full max-w-md animate-in fade-in zoom-in-95 duration-500">
+        <div className="p-8">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-slate-900">Welcome back</h2>
+            <p className="text-slate-500 mt-2 text-sm">
+              Enter your credentials to access your dashboard.
+            </p>
           </div>
 
-          {error && (
-            <div className="text-sm text-red-600 text-center bg-red-50 p-2 rounded">
-              {error}
-            </div>
+          {signedUp && (
+             <div className="mb-6 bg-green-50 border border-green-100 text-green-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+                <ShieldCheck size={16} />
+                <span>Account created! Please log in.</span>
+             </div>
           )}
 
-          <ButtonComp type="submit" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign In'}
-          </ButtonComp>
-        </form>
-        
-        <div className="text-center mt-4">
-            <p className="text-sm text-slate-600">
-                Don't have an account?{' '}
-                <Link href="/signup" className="font-medium text-slate-900 hover:underline">
-                    Sign up
-                </Link>
-            </p>
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5 ml-1">Email</label>
+                <Input 
+                  icon={Mail}
+                  type="email" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="name@business.com"
+                  required 
+                />
+              </div>
+              
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5 ml-1">Password</label>
+                <Input 
+                  icon={Lock}
+                  type="password" 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder=""
+                  required 
+                />
+              </div>
+            </div>
+
+            {error && (
+              <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg border border-red-100 animate-in slide-in-from-top-2">
+                {error}
+              </div>
+            )}
+
+            <div className="pt-2">
+              <Button type="submit" isLoading={loading}>
+                Sign In <ArrowRight size={18} className="ml-1 opacity-80" />
+              </Button>
+            </div>
+          </form>
         </div>
+        
+        <div className="bg-slate-50 p-4 text-center border-t border-slate-100">
+          <p className="text-sm text-slate-600">
+            Don''t have an account?{' '}
+            <Link href="/signup" className="text-indigo-600 font-medium hover:text-indigo-700 transition-colors">
+              Create a Business Profile
+            </Link>
+          </p>
+        </div>
+      </Card>
+      
+      <div className="mt-8 text-center">
+        <p className="text-xs text-slate-400">
+          &copy; 2026 Credo Platform. All rights reserved.
+        </p>
       </div>
     </div>
   );
