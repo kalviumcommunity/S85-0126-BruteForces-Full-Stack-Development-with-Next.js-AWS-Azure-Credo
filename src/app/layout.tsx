@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { LayoutWrapper } from "@/app/components"; // Clean import from barrel file
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Modular Component App",
-  description: "Built with reusable architecture",
+  title: "Credo | Social Trust for Entrepreneurs",
+  description: "Digital identity and reputation platform for small businesses.",
 };
 
 export default function RootLayout({
@@ -18,10 +17,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <LayoutWrapper>
-          {children}
-        </LayoutWrapper>
+        {children}
       </body>
     </html>
   );
-} 
+}
