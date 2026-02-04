@@ -5,60 +5,49 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL") // Used for serverless environments (Supabase)
+  directUrl = env("DIRECT_URL")
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  role      UserRole @default(BUSINESS_OWNER)
-  createdAt DateTime @default(now())
-
-  businesses Business[]
+model Profile {
+  id              String     @id @default(uuid())
+  email           String     @unique
+  business_name   String
+  slug            String     @unique
+  bio             String?
+  avatar_url      String?
+  qr_code_url     String?
+  current_tier    Tier       @default(BASIC)
+  trust_score     Float      @default(0)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  activities      Activity[]
+  vouchesReceived Vouch[]    @relation("VouchReceiver")
+  vouchesGiven    Vouch[]    @relation("VouchSender")
 }
 
-model Business {
-  id          Int      @id @default(autoincrement())
-  name        String
-  category    String
+model Vouch {
+  id                String   @id @default(uuid())
+  vouch_sender_id   String
+  vouch_receiver_id String
+  createdAt         DateTime @default(now())
+  vouch_receiver    Profile  @relation("VouchReceiver", fields: [vouch_receiver_id], references: [id])
+  vouch_sender      Profile  @relation("VouchSender", fields: [vouch_sender_id], references: [id])
+
+  @@unique([vouch_sender_id, vouch_receiver_id])
+}
+
+model Activity {
+  id          String   @id @default(uuid())
+  profile_id  String
+  type        String
   description String?
-  ownerId     Int
-  credoScore  Int      @default(50) // Starts at 50/100
+  metadata    Json?
   createdAt   DateTime @default(now())
-
-  owner        User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  reviews      Review[]
-  endorsements Endorsement[]
-
-  @@index([ownerId])
+  profile     Profile  @relation(fields: [profile_id], references: [id])
 }
 
-model Review {
-  id         Int      @id @default(autoincrement())
-  rating     Int
-  comment    String?
-  businessId Int
-  createdAt  DateTime @default(now())
-
-  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
-
-  @@index([businessId])
-}
-
-model Endorsement {
-  id         Int      @id @default(autoincrement())
-  endorser   String
-  businessId Int
-  createdAt  DateTime @default(now())
-
-  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
-
-  @@index([businessId])
-}
-
-enum UserRole {
-  BUSINESS_OWNER
-  ADMIN
+enum Tier {
+  BASIC
+  COMMUNITY
+  VERIFIED
 }

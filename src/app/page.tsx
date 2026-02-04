@@ -1,94 +1,72 @@
-"use client";
-import { useAuth } from "@/hooks/useAuth";
-import { useUI } from "@/hooks/useUI";
+import Link from "next/link";
+import { ShieldCheck, TrendingUp, Users } from "lucide-react";
 
-export default function Home() {
-  const { user, login, logout, isAuthenticated } = useAuth();
-  const { theme, toggleTheme, sidebarOpen, toggleSidebar } = useUI();
-
+export default function LandingPage() {
   return (
-    <main className={`min-h-screen p-8 transition-colors duration-300 ${
-      theme === "dark" ? "bg-slate-900 text-white" : "bg-gray-50 text-black"
-    }`}>
-      <h1 className="text-3xl font-bold mb-8">Global State Demo</h1>
-
-      {/* Grid Layout for Sections */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        
-        {/* Authentication Card */}
-        <section className={`p-6 rounded-xl border ${theme === 'dark' ? 'border-slate-700 bg-slate-800' : 'border-gray-200 bg-white shadow-sm'}`}>
-          <h2 className="text-xl font-semibold mb-4 text-blue-500">🔐 Auth Context</h2>
-          
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">Status:</span>
-              <span className={`px-2 py-1 rounded text-xs font-bold ${isAuthenticated ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                {isAuthenticated ? "AUTHENTICATED" : "GUEST"}
-              </span>
-            </div>
-            
-            {isAuthenticated ? (
-              <div className="space-y-3">
-                <p>Welcome back, <strong>{user}</strong>!</p>
-                <button 
-                  onClick={logout} 
-                  className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition"
-                >
-                  Logout
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <p className="text-sm opacity-75">Please log in to continue.</p>
-                <button 
-                  onClick={() => login("KalviumStudent")} 
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
-                >
-                  Login as Student
-                </button>
-              </div>
-            )}
+    <div className="min-h-screen bg-white">
+      {/* Navbar */}
+      <nav className="border-b border-slate-100 p-4">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <div className="flex items-center gap-2 font-bold text-xl text-slate-900">
+            <ShieldCheck className="text-blue-600" />
+            Credo
           </div>
-        </section>
-
-        {/* UI Controls Card */}
-        <section className={`p-6 rounded-xl border ${theme === 'dark' ? 'border-slate-700 bg-slate-800' : 'border-gray-200 bg-white shadow-sm'}`}>
-          <h2 className="text-xl font-semibold mb-4 text-purple-500">🎨 UI Context</h2>
-          
-          <div className="space-y-6">
-            {/* Theme Toggle */}
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Theme Mode</p>
-                <p className="text-sm opacity-70">Current: {theme.toUpperCase()}</p>
-              </div>
-              <button 
-                onClick={toggleTheme} 
-                className={`px-4 py-2 rounded-lg border ${theme === 'dark' ? 'border-slate-600 hover:bg-slate-700' : 'border-gray-300 hover:bg-gray-100'}`}
-              >
-                Switch to {theme === 'dark' ? 'Light' : 'Dark'}
-              </button>
-            </div>
-
-            <hr className={`border-t ${theme === 'dark' ? 'border-slate-700' : 'border-gray-200'}`} />
-
-            {/* Sidebar Toggle */}
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Sidebar</p>
-                <p className="text-sm opacity-70">State: {sidebarOpen ? "Open" : "Closed"}</p>
-              </div>
-              <button 
-                onClick={toggleSidebar} 
-                className={`w-12 h-6 rounded-full p-1 transition-colors duration-200 ${sidebarOpen ? 'bg-green-500' : 'bg-gray-400'}`}
-              >
-                <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-200 ${sidebarOpen ? 'translate-x-6' : 'translate-x-0'}`} />
-              </button>
-            </div>
+          <div className="space-x-4">
+            <Link href="/login" className="text-sm font-medium text-slate-600 hover:text-slate-900">
+              Log in
+            </Link>
+            <Link href="/signup" className="text-sm font-medium bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-800">
+              Get Started
+            </Link>
           </div>
-        </section>
+        </div>
+      </nav>
 
-      </div>
-    </main>
+      {/* Hero */}
+      <section className="py-20 px-4 text-center max-w-4xl mx-auto">
+        <h1 className="text-5xl font-extrabold text-slate-900 tracking-tight mb-6">
+          Trust is the new currency for <br/>
+          <span className="text-blue-600">Entrepreneurship</span>
+        </h1>
+        <p className="text-lg text-slate-600 mb-10 max-w-2xl mx-auto">
+          Credo builds a digital identity for your business based on community vouches, not just government papers. Prove your trustworthiness and grow.
+        </p>
+        <div className="flex justify-center gap-4">
+          <Link href="/signup" className="bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
+            Claim Your Business Profile
+          </Link>
+          <Link href="/p/demo" className="bg-slate-100 text-slate-900 px-8 py-3 rounded-xl font-semibold hover:bg-slate-200 transition-colors">
+            View Demo Profile
+          </Link>
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="py-16 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-8">
+          <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
+              <ShieldCheck className="text-blue-600 w-6 h-6" />
+            </div>
+            <h3 className="text-xl font-bold mb-3">Verified Identity</h3>
+            <p className="text-slate-600">Get a unique QR code and public profile that proves you are a legitimate, verified business.</p>
+          </div>
+          <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-6">
+              <Users className="text-green-600 w-6 h-6" />
+            </div>
+            <h3 className="text-xl font-bold mb-3">Community Vouches</h3>
+            <p className="text-slate-600">Accumulate trust points when other businesses and customers vouch for your service.</p>
+          </div>
+          <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
+              <TrendingUp className="text-purple-600 w-6 h-6" />
+            </div>
+            <h3 className="text-xl font-bold mb-3">Trust Score</h3>
+            <p className="text-slate-600">Level up from Basic to Community Verified. Higher tiers unlock better financial opportunities.</p>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }

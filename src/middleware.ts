@@ -1,39 +1,44 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { verifyToken, ROLES } from "./lib/auth";
+import { createClient } from "@supabase/supabase-js";
 
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
 
-  // 1. Protect Admin Routes (Role Check)
-  if (path.startsWith("/admin") || path.includes("/admin-action")) {
-    const token = req.headers.get("Authorization")?.split(" ")[1];
+  // 1. Protect Dashboard Routes
+  if (path.startsWith("/dashboard")) {
     
-    // Verify Token
-    const payload = token ? await verifyToken(token, "access") : null;
-
-    // Check if user exists and has 'admin' role
-    // @ts-ignore
-    if (!payload || payload.role !== "admin") {
-      console.log(`[Middleware] Blocked access to ${path} for role: ${payload?.role || "anonymous"}`);
-      return NextResponse.json({ error: "Forbidden: Admins only" }, { status: 403 });
-    }
-  }
-
-  // 2. Protect General API Routes (Login Check)
-  if (path.startsWith("/api/auth/me")) {
-    const token = req.headers.get("Authorization")?.split(" ")[1];
-    if (!token || !(await verifyToken(token, "access"))) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // Check for Supabase session cookies
+    // Note: With @supabase/ssr, you would use createServerClient and standard cookie handling
+    // For this basic middleware without cookie parsing libraries, we check for the standard sb- token
+    // Or we rely on the client logic. 
+    // However, middleware should catch unauth requests.
+    
+    // Simplest check: iterate cookies for 'sb-[project-ref]-auth-token'
+    const hasAuthCookie = req.cookies.getAll().some(cookie => cookie.name.startsWith('sb-') && cookie.name.endsWith('-auth-token'));
+    
+    // NOTE: This is a weak check. In production, use @supabase/ssr updateSession() 
+    // to properly validate the JWT.
+    
+    if (!hasAuthCookie) {
+         const url = req.nextUrl.clone();
+         url.pathname = '/login';
+         return NextResponse.redirect(url);
     }
   }
 
   return NextResponse.next();
 }
 
-export const config = { 
+export const config = {
   matcher: [
-    "/api/auth/me", 
-    "/api/auth/admin-action", // We will create this virtual route next
-    "/admin/:path*" 
-  ] 
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public (public folder)
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
 };
