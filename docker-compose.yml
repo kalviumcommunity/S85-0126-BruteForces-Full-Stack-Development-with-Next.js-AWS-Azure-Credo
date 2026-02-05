@@ -14,7 +14,6 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./prisma/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U credo_user -d credo_db"]
       interval: 10s
@@ -36,24 +35,57 @@ services:
       timeout: 5s
       retries: 5
 
+  # Database Initialization
+  migrator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+    container_name: credo_migrator
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+    command: sh -c "npx prisma db push && echo 'Schema pushed'"
+    environment:
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      DATABASE_URL: "postgresql://credo_user:credo_password@postgres:5432/credo_db"
+      DIRECT_URL: "postgresql://credo_user:credo_password@postgres:5432/credo_db"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   # The Next.js App Service
   app:
     build:
       context: .
       dockerfile: Dockerfile
       target: runner
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
     container_name: credo_app
     restart: always
     ports:
       - "3000:3000"
+    env_file:
+      - .env
     environment:
       NODE_ENV: production
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
       DATABASE_URL: "postgresql://credo_user:credo_password@postgres:5432/credo_db"
       DIRECT_URL: "postgresql://credo_user:credo_password@postgres:5432/credo_db"
       REDIS_URL: "redis://redis:6379"
       NEXTAUTH_URL: "http://localhost:3000"
       NEXTAUTH_SECRET: "your-secret-key-change-in-production"
     depends_on:
+      migrator:
+        condition: service_completed_successfully
       postgres:
         condition: service_healthy
       redis:

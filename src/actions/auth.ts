@@ -47,6 +47,8 @@ export async function signUpBusiness(prevState: SignupState, formData: FormData)
     }
 
     // 3. Create Supabase User
+    // Note: If "Confirm Email" is enabled in Supabase, this will send an email.
+    // If disabled, it auto-confirms.
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
@@ -70,11 +72,12 @@ export async function signUpBusiness(prevState: SignupState, formData: FormData)
     }
 
     // 4. Create Prisma Profile
-    // If Using 'Direct URL' in Prisma, this works even in serverless
+    // We create the profile immediately, but the user might not be able to login yet 
+    // if email confirmation is on. The Profile table is separate from Auth.
     await prisma.profile.create({
       data: {
         id: authData.user.id, // Link to Supabase Auth ID
-        email: authData.user.email!,
+        email: email, // Use form email directly in case authData email is undefined/masked
         business_name: businessName,
         slug: slug,
         current_tier: 'BASIC',
