@@ -5,7 +5,13 @@ WORKDIR /app
 
 # Install dependencies
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --ignore-scripts
+
+# Build Args for Public Env Vars
+ARG NEXT_PUBLIC_SUPABASE_URL
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
+ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 # Copy source code
 COPY . .
@@ -19,8 +25,8 @@ RUN npm run build
 # Stage 2: Production
 FROM node:20-alpine AS runner
 
-# Install curl for health check
-RUN apk add --no-cache curl
+# Install curl for health check and openssl for Prisma
+RUN apk add --no-cache curl openssl
 
 WORKDIR /app
 

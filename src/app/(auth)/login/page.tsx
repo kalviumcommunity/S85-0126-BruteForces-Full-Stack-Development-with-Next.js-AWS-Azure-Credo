@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -39,7 +39,7 @@ const Button = ({ children, isLoading, className = "", ...props }: React.ButtonH
   </button>
 );
 
-export default function LoginPage() {
+function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -64,17 +64,34 @@ export default function LoginPage() {
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message.includes('Email not confirmed')) {
+          throw new Error("Please verify your email address. Check your inbox (or spam) for the confirmation link.");
+        }
+        throw error;
+      }
       if (!data.session) throw new Error("No session created");
 
       const projectRef = process.env.NEXT_PUBLIC_SUPABASE_URL!.match(/https:\/\/(.*)\.supabase\.co/)?.[1] || "";
+      
+      const cookieValue = JSON.stringify({
+        access_token: data.session.access_token,
+        refresh_token: data.session.refresh_token
+      });
+      const encodedValue = encodeURIComponent(cookieValue);
+
       if (projectRef) {
           const cookieName = `sb-${projectRef}-auth-token`;
-           document.cookie = `${cookieName}=true; path=/; max-age=${data.session.expires_in}; SameSite=Lax; Secure`;
+          document.cookie = `${cookieName}=${encodedValue}; path=/; max-age=${data.session.expires_in}; SameSite=Lax`;
+      } else {
+         document.cookie = `sb-generic-auth-token=${encodedValue}; path=/; max-age=${data.session.expires_in}; SameSite=Lax`;
       }
 
-      router.refresh();
-      router.push('/dashboard');
+      // Add a small delay to ensure cookie is set before navigation
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Force navigation
+      window.location.href = '/dashboard';
 
     } catch (err: any) {
       setError(err.message || 'Failed to login');
@@ -83,6 +100,66 @@ export default function LoginPage() {
     }
   };
 
+  return (
+    <>
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-slate-900">Welcome back</h2>
+        <p className="text-slate-500 mt-2 text-sm">
+          Enter your credentials to access your dashboard.
+        </p>
+      </div>
+
+      {signedUp && (
+          <div className="mb-6 bg-green-50 border border-green-100 text-green-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+            <ShieldCheck size={16} />
+            <span>Account created! Please log in.</span>
+          </div>
+      )}
+
+      <form onSubmit={handleLogin} className="space-y-5">
+        <div className="space-y-4">
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5 ml-1">Email</label>
+            <Input 
+              icon={Mail}
+              type="email" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="name@business.com"
+              required 
+            />
+          </div>
+          
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5 ml-1">Password</label>
+            <Input 
+              icon={Lock}
+              type="password" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder=""
+              required 
+            />
+          </div>
+        </div>
+
+        {error && (
+          <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg border border-red-100 animate-in slide-in-from-top-2">
+            {error}
+          </div>
+        )}
+
+        <div className="pt-2">
+          <Button type="submit" isLoading={loading}>
+            Sign In <ArrowRight size={18} className="ml-1 opacity-80" />
+          </Button>
+        </div>
+      </form>
+    </>
+  );
+}
+
+export default function LoginPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50/50 flex flex-col items-center justify-center p-4">
       <div className="mb-8 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -95,59 +172,9 @@ export default function LoginPage() {
 
       <Card className="w-full max-w-md animate-in fade-in zoom-in-95 duration-500">
         <div className="p-8">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-slate-900">Welcome back</h2>
-            <p className="text-slate-500 mt-2 text-sm">
-              Enter your credentials to access your dashboard.
-            </p>
-          </div>
-
-          {signedUp && (
-             <div className="mb-6 bg-green-50 border border-green-100 text-green-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
-                <ShieldCheck size={16} />
-                <span>Account created! Please log in.</span>
-             </div>
-          )}
-
-          <form onSubmit={handleLogin} className="space-y-5">
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5 ml-1">Email</label>
-                <Input 
-                  icon={Mail}
-                  type="email" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@business.com"
-                  required 
-                />
-              </div>
-              
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5 ml-1">Password</label>
-                <Input 
-                  icon={Lock}
-                  type="password" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder=""
-                  required 
-                />
-              </div>
-            </div>
-
-            {error && (
-              <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg border border-red-100 animate-in slide-in-from-top-2">
-                {error}
-              </div>
-            )}
-
-            <div className="pt-2">
-              <Button type="submit" isLoading={loading}>
-                Sign In <ArrowRight size={18} className="ml-1 opacity-80" />
-              </Button>
-            </div>
-          </form>
+          <Suspense fallback={<div className="flex justify-center py-10"><Loader2 className="animate-spin text-indigo-600" /></div>}>
+            <LoginForm />
+          </Suspense>
         </div>
         
         <div className="bg-slate-50 p-4 text-center border-t border-slate-100">
