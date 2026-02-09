@@ -5,15 +5,13 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Starting seed...');
 
-  // 1. Create a User (Business Owner)
+  // 1. Create a User (Business Owner) - Role should be USER based on schema, or we can make them COMMUNITY_LEADER
   const user = await prisma.user.upsert({
     where: { email: 'alice@credo.local' },
     update: {},
     create: {
       email: 'alice@credo.local',
-      name: 'Alice V.',
-      password: 'hashedpassword123', // In real app, hash this!
-      role: 'BUSINESS_OWNER',
+      role: 'USER',
     },
   });
 
@@ -21,26 +19,38 @@ async function main() {
   const business = await prisma.business.create({
     data: {
       name: 'Street Bites Chandigarh',
-      category: 'Food & Beverage',
       description: 'Authentic local street food with high hygiene standards.',
+      address: 'Sector 17, Chandigarh',
       ownerId: user.id,
-      credoScore: 85,
-      reviews: {
-        create: [
-          { rating: 5, comment: 'Best momos in sector 17!' },
-          { rating: 4, comment: 'Great hygiene, tasty food.' },
-        ],
-      },
-      endorsements: {
-        create: [
-          { endorser: 'Local Food Safety Officer' },
-          { endorser: 'Supplier: FreshFarms' },
-        ],
-      },
+      trust_score: 2,
     },
   });
 
-  console.log(`✅ Created business: ${business.name}`);
+  // 3. Create Vouchers
+  const bob = await prisma.user.create({
+    data: { email: 'bob@credo.local', role: 'COMMUNITY_LEADER' }
+  });
+  
+  const charlie = await prisma.user.create({
+     data: { email: 'charlie@credo.local', role: 'USER' }
+  });
+
+  // 4. Create Vouches
+  await prisma.vouch.create({
+    data: {
+        voucher_id: bob.id,
+        receiver_business_id: business.id
+    }
+  });
+
+  await prisma.vouch.create({
+    data: {
+        voucher_id: charlie.id,
+        receiver_business_id: business.id
+    }
+  });
+
+  console.log(`✅ Created business: ${business.name} with 2 vouches`);
 }
 
 main()
