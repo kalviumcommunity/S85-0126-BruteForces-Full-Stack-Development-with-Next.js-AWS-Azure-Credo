@@ -2,12 +2,17 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
+import { ThemeProvider } from "@/components/providers/theme-provider";
+import { FloatingNavbar } from "@/components/ui/FloatingNavbar";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
 
 export const metadata: Metadata = {
-  title: "Credo | Build Community Reputation",
-  description: "The trusted network for local businesses. Earn reputation through community vouches.",
+  title: "Credo | Community Trust Platform",
+  description: "Build and verify trust through community vouches. The reputation layer for local businesses.",
 };
 
 export default function RootLayout({
@@ -16,11 +21,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <AuthProvider>
-            {children}
-        </AuthProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.variable} font-sans`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AuthProvider>
+            <FloatingNavbar />
+            <main className="min-h-screen">{children}</main>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

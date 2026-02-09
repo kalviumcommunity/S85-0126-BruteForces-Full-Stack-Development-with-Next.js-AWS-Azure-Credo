@@ -35,7 +35,7 @@ export function VouchButton({ businessId }: { businessId: string }) {
     <button 
       onClick={handleVouch} 
       disabled={loading}
-      className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-lg font-semibold transition-all shadow-sm hover:shadow-md disabled:opacity-50"
+      className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2.5 rounded-lg font-semibold transition-all shadow-sm hover:shadow-md disabled:opacity-50"
     >
       {loading ? <Loader2 className="animate-spin" size={18} /> : <ThumbsUp size={18} />}
       Vouch for this Business
