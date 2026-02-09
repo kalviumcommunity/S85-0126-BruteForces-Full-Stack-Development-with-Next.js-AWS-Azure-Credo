@@ -1,11 +1,9 @@
 
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/db'
 import Link from 'next/link'
 import { Search, MapPin, ShieldCheck, ArrowRight } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
-
-const prisma = new PrismaClient()
 
 export default async function SearchPage({
   searchParams,

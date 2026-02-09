@@ -1,35 +1,41 @@
 
-import { PrismaClient } from '@prisma/client'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowRight, ShieldCheck, CheckCircle2, UserPlus, BarChart, ExternalLink, MapPin, Users } from 'lucide-react'
+import { prisma } from '@/lib/db'
+import { createClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
 
-// Mocking session - in real app use Supabase SSR
 async function getSession() {
-  return { user: { id: "user-123", email: "test@example.com" } }
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
+  return { user }
 }
-
-const prisma = new PrismaClient()
 
 export default async function Dashboard() {
   const session = await getSession()
-  if (!session) redirect('/login')
+  if (!session || !session.user || !session.user.email) redirect('/login')
 
-  // Data fetching logic (preserved from previous robust fix)
+  const userEmail = session.user.email
+
+  // Data fetching logic
   let user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+    where: { email: userEmail },
     include: {
       businesses: { include: { receivedVouches: true } },
       givenVouches: { include: { receiver_business: true } }
     }
   })
 
-  // Demo auto-creation
+  // Sync Supabase user to Prisma DB if not exists
   if (!user) {
     user = await prisma.user.create({
-      data: { email: session.user.email, role: 'USER' },
+      data: { 
+        email: userEmail, 
+        role: 'USER'
+      },
       include: {
         businesses: { include: { receivedVouches: true } },
         givenVouches: { include: { receiver_business: true } }
