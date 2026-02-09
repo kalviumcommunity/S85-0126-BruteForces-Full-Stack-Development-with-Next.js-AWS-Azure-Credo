@@ -1,72 +1,135 @@
-import Link from "next/link";
-import { ShieldCheck, TrendingUp, Users } from "lucide-react";
+import Link from 'next/link';
+import { ShieldCheck, Search, ArrowRight, Users, CheckCircle2 } from 'lucide-react';
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-white">
-      {/* Navbar */}
-      <nav className="border-b border-slate-100 p-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-2 font-bold text-xl text-slate-900">
-            <ShieldCheck className="text-blue-600" />
-            Credo
+    <div className="flex min-h-screen flex-col bg-white">
+      {/* Navigation */}
+      <header className="sticky top-0 z-50 w-full border-b border-gray-100 bg-white/80 backdrop-blur-md">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white">
+               <ShieldCheck size={20} />
+            </div>
+            <span className="text-xl font-bold tracking-tight text-slate-900">LocalTrust</span>
           </div>
-          <div className="space-x-4">
-            <Link href="/login" className="text-sm font-medium text-slate-600 hover:text-slate-900">
-              Log in
-            </Link>
-            <Link href="/signup" className="text-sm font-medium bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-800">
-              Get Started
-            </Link>
-          </div>
+          <nav className="flex gap-4">
+             <Link href="/login" className="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors py-2">
+                Merchant Login
+             </Link>
+             <Link href="/login" className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-slate-800">
+                Get Verified
+             </Link>
+          </nav>
         </div>
-      </nav>
+      </header>
 
-      {/* Hero */}
-      <section className="py-20 px-4 text-center max-w-4xl mx-auto">
-        <h1 className="text-5xl font-extrabold text-slate-900 tracking-tight mb-6">
-          Trust is the new currency for <br/>
-          <span className="text-blue-600">Entrepreneurship</span>
-        </h1>
-        <p className="text-lg text-slate-600 mb-10 max-w-2xl mx-auto">
-          Credo builds a digital identity for your business based on community vouches, not just government papers. Prove your trustworthiness and grow.
-        </p>
-        <div className="flex justify-center gap-4">
-          <Link href="/signup" className="bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
-            Claim Your Business Profile
-          </Link>
-          <Link href="/p/demo" className="bg-slate-100 text-slate-900 px-8 py-3 rounded-xl font-semibold hover:bg-slate-200 transition-colors">
-            View Demo Profile
-          </Link>
-        </div>
-      </section>
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section className="relative px-6 pt-14 lg:px-8 overflow-hidden">
+          <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
+            <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#3b82f6] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"></div>
+          </div>
 
-      {/* Features */}
-      <section className="py-16 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-8">
-          <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
-              <ShieldCheck className="text-blue-600 w-6 h-6" />
+          <div className="mx-auto max-w-4xl py-20 sm:py-32 lg:py-40 text-center">
+            <div className="mb-8 flex justify-center">
+              <div className="relative rounded-full px-3 py-1 text-sm leading-6 text-slate-600 ring-1 ring-slate-900/10 hover:ring-slate-900/20">
+                Building trust for the local economy. <Link href="#" className="font-semibold text-blue-600"><span className="absolute inset-0" aria-hidden="true" />Read the manifesto <span aria-hidden="true">&rarr;</span></Link>
+              </div>
             </div>
-            <h3 className="text-xl font-bold mb-3">Verified Identity</h3>
-            <p className="text-slate-600">Get a unique QR code and public profile that proves you are a legitimate, verified business.</p>
+            <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-6xl mb-6">
+              Reputation is earned,<br />
+              <span className="text-gradient">not bought.</span>
+            </h1>
+            <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-600">
+              Replace expensive background checks with community vouchers. 
+              LocalTrust verifies small businesses through real relationships.
+            </p>
+            
+            <div className="mt-10 mx-auto max-w-2xl">
+                <form action="/search" className="relative group">
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
+                        <Search size={22} />
+                    </div>
+                    <input 
+                        name="q"
+                        type="search" 
+                        placeholder="Search for a plumber, tutor, or local business..."
+                        className="block w-full rounded-2xl border-0 py-4 pl-12 pr-40 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-lg sm:leading-6 transition-all"
+                    />
+                    <div className="absolute inset-y-2 right-2 flex">
+                        <button type="submit" className="rounded-xl bg-blue-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                            Search
+                        </button>
+                    </div>
+                </form>
+            </div>
           </div>
-          <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-6">
-              <Users className="text-green-600 w-6 h-6" />
+        </section>
+
+        {/* Value Props */}
+        <section className="bg-slate-50 py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl lg:text-center">
+              <h2 className="text-base font-semibold leading-7 text-blue-600">How it works</h2>
+              <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                A simple path to verification
+              </p>
             </div>
-            <h3 className="text-xl font-bold mb-3">Community Vouches</h3>
-            <p className="text-slate-600">Accumulate trust points when other businesses and customers vouch for your service.</p>
+            <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
+              <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
+                
+                <div className="flex flex-col items-start">
+                  <div className="rounded-xl bg-white p-3 shadow-md ring-1 ring-slate-900/10 mb-6">
+                    <Users className="h-6 w-6 text-blue-600" aria-hidden="true" />
+                  </div>
+                  <dt className="text-xl font-semibold leading-7 text-slate-900">
+                    1. Invite Vouchers
+                  </dt>
+                  <dd className="mt-2 flex flex-auto flex-col text-base leading-7 text-slate-600">
+                    <p className="flex-auto">Create a profile and invite 3 trusted community leaders or existing verified businesses to vouch for you.</p>
+                  </dd>
+                </div>
+
+                <div className="flex flex-col items-start">
+                  <div className="rounded-xl bg-white p-3 shadow-md ring-1 ring-slate-900/10 mb-6">
+                    <CheckCircle2 className="h-6 w-6 text-blue-600" aria-hidden="true" />
+                  </div>
+                  <dt className="text-xl font-semibold leading-7 text-slate-900">
+                    2. Get Verified
+                  </dt>
+                  <dd className="mt-2 flex flex-auto flex-col text-base leading-7 text-slate-600">
+                    <p className="flex-auto">Once you reach 3 unique vouches, your business earns the "Community Verified" badge automatically.</p>
+                  </dd>
+                </div>
+
+                <div className="flex flex-col items-start">
+                  <div className="rounded-xl bg-white p-3 shadow-md ring-1 ring-slate-900/10 mb-6">
+                    <ArrowRight className="h-6 w-6 text-blue-600" aria-hidden="true" />
+                  </div>
+                  <dt className="text-xl font-semibold leading-7 text-slate-900">
+                    3. Grow Repuation
+                  </dt>
+                  <dd className="mt-2 flex flex-auto flex-col text-base leading-7 text-slate-600">
+                    <p className="flex-auto">Accumulate trust points over time. High trust scores appear at the top of local search results.</p>
+                  </dd>
+                </div>
+
+              </dl>
+            </div>
           </div>
-          <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
-            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
-              <TrendingUp className="text-purple-600 w-6 h-6" />
-            </div>
-            <h3 className="text-xl font-bold mb-3">Trust Score</h3>
-            <p className="text-slate-600">Level up from Basic to Community Verified. Higher tiers unlock better financial opportunities.</p>
+        </section>
+      </main>
+
+      <footer className="bg-white border-t border-gray-200">
+        <div className="mx-auto max-w-7xl px-6 py-12 md:flex md:items-center md:justify-between lg:px-8">
+          <div className="mt-8 md:order-1 md:mt-0">
+            <p className="text-center text-xs leading-5 text-slate-500">
+              &copy; 2024 LocalTrust platform. Built for the community.
+            </p>
           </div>
         </div>
-      </section>
+      </footer>
     </div>
   );
 }

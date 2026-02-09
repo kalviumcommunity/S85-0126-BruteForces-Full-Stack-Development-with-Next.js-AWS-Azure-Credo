@@ -1,54 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
-model Profile {
-  id              String     @id @default(uuid())
-  email           String     @unique
-  business_name   String
-  slug            String     @unique
-  bio             String?
-  avatar_url      String?
-  qr_code_url     String?
-  current_tier    Tier       @default(BASIC)
-  trust_score     Float      @default(0)
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
-  activities      Activity[]
-  vouchesReceived Vouch[]    @relation("VouchReceiver")
-  vouchesGiven    Vouch[]    @relation("VouchSender")
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  role      Role     @default(USER) // USER, ADMIN, COMMUNITY_LEADER
+  createdAt DateTime @default(now())
+  
+  // Relations
+  businesses Business[]
+  givenVouches Vouch[]
+}
+
+model Business {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  address     String?
+  is_verified Boolean  @default(false)
+  trust_score Int      @default(0)
+  
+  ownerId     String
+  owner       User     @relation(fields: [ownerId], references: [id])
+  
+  receivedVouches Vouch[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Vouch {
-  id                String   @id @default(uuid())
-  vouch_sender_id   String
-  vouch_receiver_id String
-  createdAt         DateTime @default(now())
-  vouch_receiver    Profile  @relation("VouchReceiver", fields: [vouch_receiver_id], references: [id])
-  vouch_sender      Profile  @relation("VouchSender", fields: [vouch_sender_id], references: [id])
+  id                  String   @id @default(uuid())
+  timestamp           DateTime @default(now())
+  
+  voucher_id          String
+  voucher             User     @relation(fields: [voucher_id], references: [id])
+  
+  receiver_business_id String
+  receiver_business    Business @relation(fields: [receiver_business_id], references: [id])
 
-  @@unique([vouch_sender_id, vouch_receiver_id])
+  @@unique([voucher_id, receiver_business_id]) // Prevent duplicate vouches from same user to same business
 }
 
-model Activity {
-  id          String   @id @default(uuid())
-  profile_id  String
-  type        String
-  description String?
-  metadata    Json?
-  createdAt   DateTime @default(now())
-  profile     Profile  @relation(fields: [profile_id], references: [id])
-}
-
-enum Tier {
-  BASIC
-  COMMUNITY
-  VERIFIED
+enum Role {
+  USER
+  ADMIN
+  COMMUNITY_LEADER
 }
