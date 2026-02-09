@@ -92,7 +92,7 @@ export default async function Dashboard() {
                     <div className="flex justify-between items-start mb-6">
                         <div>
                             <h2 className="text-lg font-semibold text-slate-900">Identity Status</h2>
-                            <p className="text-sm text-slate-500">Your verification progress in the LocalTrust network.</p>
+                            <p className="text-sm text-slate-500">Your verification progress in the Credo network.</p>
                         </div>
                         {isVerified ? (
                             <span className="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1 text-sm font-medium text-green-700 ring-1 ring-inset ring-green-600/20">

@@ -2,47 +2,43 @@
 
 import { useState } from 'react';
 import { vouchForBusiness } from '@/actions/vouch';
-import { Loader2, Check } from 'lucide-react';
+import { Loader2, ThumbsUp } from 'lucide-react';
 
-// Fallback Basic Button
-const UI_Button = (props: any) => <button className={`inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 disabled:pointer-events-none disabled:opacity-50 bg-white text-slate-900 hover:bg-slate-100 h-10 px-4 py-2 w-full ${props.className || ''}`} {...props} />;
-
-export function VouchButton({ receiverId }: { receiverId: string }) {
+export function VouchButton({ businessId }: { businessId: string }) {
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState('');
 
   const handleVouch = async () => {
+    if (!confirm('Are you sure you want to vouch for this business? This action is public.')) return;
+    
     setLoading(true);
-    setError(null);
-    try {
-        const result = await vouchForBusiness(receiverId);
-        if (result.success) {
-            setSuccess(true);
-        } else {
-            setError(result.message || "Something went wrong");
-        }
-    } catch (e) {
-        setError("Failed to connect");
-    } finally {
-        setLoading(false);
+    const result = await vouchForBusiness(businessId);
+    setLoading(false);
+    
+    if (result.success) {
+      setMessage('Vouched!');
+      // Optional: Refresh page or update local state
+    } else {
+      alert(result.message);
     }
   };
 
-  if (success) {
+  if (message) {
       return (
-          <div className="w-full bg-green-600/20 text-green-100 py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 border border-green-500/30">
-              <Check className="w-4 h-4" /> Vouched
-          </div>
+          <button disabled className="flex items-center gap-2 bg-green-600 text-white px-6 py-2.5 rounded-lg font-semibold cursor-default">
+            <ThumbsUp size={18} /> {message}
+          </button>
       )
   }
 
   return (
-    <div className='w-full'>
-        <UI_Button onClick={handleVouch} disabled={loading}>
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Vouch Now'}
-        </UI_Button>
-        {error && <p className="text-xs text-red-300 mt-2 text-center">{error}</p>}
-    </div>
+    <button 
+      onClick={handleVouch} 
+      disabled={loading}
+      className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-lg font-semibold transition-all shadow-sm hover:shadow-md disabled:opacity-50"
+    >
+      {loading ? <Loader2 className="animate-spin" size={18} /> : <ThumbsUp size={18} />}
+      Vouch for this Business
+    </button>
   );
 }

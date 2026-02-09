@@ -24,9 +24,9 @@ export async function vouchForBusiness(receiverId: string) {
     // 2. Check if user already vouched
     const existingVouch = await prisma.vouch.findUnique({
       where: {
-        vouch_sender_id_vouch_receiver_id: {
-          vouch_sender_id: voucherId,
-          vouch_receiver_id: receiverId,
+        voucher_id_receiver_business_id: {
+          voucher_id: voucherId,
+          receiver_business_id: receiverId,
         },
       },
     });
@@ -38,8 +38,8 @@ export async function vouchForBusiness(receiverId: string) {
     // 3. Create Vouch
     await prisma.vouch.create({
       data: {
-        vouch_sender_id: voucherId,
-        vouch_receiver_id: receiverId,
+        voucher_id: voucherId,
+        receiver_business_id: receiverId,
       },
     });
 
@@ -47,11 +47,12 @@ export async function vouchForBusiness(receiverId: string) {
     const result = await updateTrustScore(receiverId);
 
     revalidatePath('/dashboard');
+    revalidatePath(`/business/${receiverId}`); // Also revalidate business page
     return { 
       success: true, 
       message: "Vouch submitted successfully!",
       newScore: result.newScore,
-      newTier: result.newTier
+      isVerified: result.isVerified
     };
 
   } catch (error) {
