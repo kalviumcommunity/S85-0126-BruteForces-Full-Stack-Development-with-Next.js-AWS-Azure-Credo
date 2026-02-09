@@ -39,7 +39,7 @@ export default async function SearchPage({
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white">
                     <ShieldCheck size={20} />
                 </div>
-                <span className="font-bold text-slate-900">LocalTrust</span>
+                <span className="font-bold text-slate-900">Credo</span>
              </Link>
              <Link href="/dashboard" className="text-sm font-medium text-slate-600 hover:text-slate-900">
                 Go to Dashboard

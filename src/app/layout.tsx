@@ -6,7 +6,7 @@ import { AuthProvider } from "@/context/AuthContext";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "LocalTrust | Build Community Reputation",
+  title: "Credo | Build Community Reputation",
   description: "The trusted network for local businesses. Earn reputation through community vouches.",
 };
 

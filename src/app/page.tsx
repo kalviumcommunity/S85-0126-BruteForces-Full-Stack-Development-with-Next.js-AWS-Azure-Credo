@@ -11,7 +11,7 @@ export default function LandingPage() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white">
                <ShieldCheck size={20} />
             </div>
-            <span className="text-xl font-bold tracking-tight text-slate-900">LocalTrust</span>
+            <span className="text-xl font-bold tracking-tight text-slate-900">Credo</span>
           </div>
           <nav className="flex gap-4">
              <Link href="/login" className="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors py-2">
@@ -43,7 +43,7 @@ export default function LandingPage() {
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-600">
               Replace expensive background checks with community vouchers. 
-              LocalTrust verifies small businesses through real relationships.
+              Credo verifies small businesses through real relationships.
             </p>
             
             <div className="mt-10 mx-auto max-w-2xl">
