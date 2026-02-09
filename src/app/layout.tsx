@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Credo | Social Trust for Entrepreneurs",
-  description: "Digital identity and reputation platform for small businesses.",
+  title: "LocalTrust | Build Community Reputation",
+  description: "The trusted network for local businesses. Earn reputation through community vouches.",
 };
 
 export default function RootLayout({

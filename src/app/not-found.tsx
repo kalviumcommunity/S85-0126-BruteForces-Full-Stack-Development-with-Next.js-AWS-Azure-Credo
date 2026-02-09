@@ -1,15 +1,19 @@
 import Link from 'next/link'
- 
+import { FileQuestion } from 'lucide-react'
+
 export default function NotFound() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50">
-      <div className="text-center">
-        <h2 className="text-3xl font-bold tracking-tight text-slate-900">404 Not Found</h2>
-        <p className="mt-2 text-slate-600">Could not find requested resource</p>
-        <div className="mt-6">
-            <Link
-                href="/"
-                className="rounded-md bg-slate-900 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600"
+    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
+      <div className="text-center space-y-6 max-w-md">
+        <div className="mx-auto w-20 h-20 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center">
+            <FileQuestion size={40} />
+        </div>
+        <h1 className="text-4xl font-bold text-slate-900">Page Not Found</h1>
+        <p className="text-slate-600">The page you are looking for doesn't exist or has been moved.</p>
+        <div>
+            <Link 
+                href="/" 
+                className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors"
             >
                 Return Home
             </Link>
