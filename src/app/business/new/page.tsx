@@ -17,7 +17,7 @@ export default function NewBusinessPage() {
   return (
     <div className="max-w-2xl mx-auto py-10 px-4">
       <h1 className="text-2xl font-bold mb-6">Register Your Business</h1>
-      <form action={createBusiness} className="space-y-4">
+      <form action={async (formData: FormData) => { await createBusiness(formData); }} className="space-y-4">
         <div>
             <label className="block text-sm font-medium mb-1">Business Name</label>
             <input name="name" type="text" required className="w-full border rounded-lg p-2" placeholder="e.g. Joe's Coffee" />
