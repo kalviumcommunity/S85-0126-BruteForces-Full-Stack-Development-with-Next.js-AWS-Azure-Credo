@@ -12,7 +12,7 @@ export async function getDashboardData() {
     redirect('/login');
   }
 
-  const dbUser = await prisma.user.findUnique({
+  let dbUser = await prisma.user.findUnique({
     where: { email: user.email },
     include: {
       businesses: {
@@ -35,7 +35,22 @@ export async function getDashboardData() {
   });
 
   if (!dbUser) {
-    return null;
+    // Sync user if present in Auth but not in DB
+    try {
+        dbUser = await prisma.user.create({
+            data: { email: user.email },
+            include: {
+                businesses: {
+                    include: {
+                        receivedVouches: { include: { voucher: true } },
+                        vouchRequests: true
+                    }
+                }
+            }
+        });
+    } catch (e) {
+        return null;
+    }
   }
 
   const business = dbUser.businesses[0];
