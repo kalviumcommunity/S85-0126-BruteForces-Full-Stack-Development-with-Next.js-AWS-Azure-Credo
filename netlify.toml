@@ -1,6 +1,6 @@
 [build]
-  # Clean the command to remove the broken variable
-  command = "npx prisma generate && npx prisma migrate deploy && npm run build"
+  # Removed 'npx prisma migrate deploy' to unblock the build
+  command = "npx prisma generate && npm run build"
   publish = ".next"
 
 [[plugins]]
