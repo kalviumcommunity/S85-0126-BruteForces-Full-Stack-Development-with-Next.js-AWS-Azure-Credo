@@ -1,5 +1,6 @@
 [build]
-  command = "PRISMA_CLI_BINARY_TARGETS=rhel-openssl-3.0.x npx prisma generate && npx prisma migrate deploy && npm run build"
+  # Clean the command to remove the broken variable
+  command = "npx prisma generate && npx prisma migrate deploy && npm run build"
   publish = ".next"
 
 [[plugins]]
@@ -7,5 +8,4 @@
 
 [build.environment]
   NODE_VERSION = "20"
-  # This helps bypass the Husky error if it still lingers
   NPM_CONFIG_IGNORE_SCRIPTS = "true"

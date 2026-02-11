@@ -1,11 +1,7 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider      = "prisma-client-js"
-  // 'native' is for your local machine
-  // 'rhel-openssl-3.0.x' is specifically for Netlify/AWS Lambda on Node 20
-  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+  // 'native' for local, 'rhel...' for Netlify functions, 'debian...' for Netlify build container
+  binaryTargets = ["native", "rhel-openssl-3.0.x", "debian-openssl-3.0.x"]
 }
 
 datasource db {
