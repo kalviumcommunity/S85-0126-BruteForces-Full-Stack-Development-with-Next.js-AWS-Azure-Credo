@@ -12,7 +12,7 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "type-check": "tsc --noEmit",
-    "prepare": "husky install",
+    "prepare": "if [ \"$NODE_ENV\" != \"production\" ]; then husky install; fi",
     "lhci": "lhci autorun",
     "analyze": "ANALYZE=true npm run build",
     "bundle-analyzer": "npx @next/bundle-analyzer"
