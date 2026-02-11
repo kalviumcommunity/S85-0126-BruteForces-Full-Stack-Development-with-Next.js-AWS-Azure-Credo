@@ -1,7 +1,7 @@
 'use server'
 
 import { prisma } from "@/lib/db"
-import { createClient } from "@/lib/supabase/server"
+import { getAuthenticatedUser } from "@/lib/server-auth"
 import { redirect } from "next/navigation"
 import { z } from "zod"
 
@@ -12,19 +12,10 @@ const businessSchema = z.object({
 })
 
 export async function createBusiness(formData: FormData) {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user || !user.email) {
-    redirect('/login')
-  }
-
-  const dbUser = await prisma.user.findUnique({
-    where: { email: user.email }
-  })
+  const dbUser = await getAuthenticatedUser()
 
   if (!dbUser) {
-    throw new Error("User not found in database")
+    redirect('/login')
   }
 
   const name = formData.get('name') as string
