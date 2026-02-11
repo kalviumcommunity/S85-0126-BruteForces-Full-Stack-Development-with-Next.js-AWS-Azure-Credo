@@ -1,8 +1,5 @@
 [build]
-  # 1. Generate Prisma Client
-  # 2. Apply migrations (Safe for production)
-  # 3. Build the Next.js app
-  command = "npx prisma generate && npx prisma migrate deploy && npm run build"
+  command = "PRISMA_CLI_BINARY_TARGETS=rhel-openssl-3.0.x npx prisma generate && npx prisma migrate deploy && npm run build"
   publish = ".next"
 
 [[plugins]]

@@ -3,14 +3,15 @@
 
 generator client {
   provider      = "prisma-client-js"
-  // Required for Netlify's build environment
-  binaryTargets = ["native", "rhel-debian-node-20"]
+  // 'native' is for your local machine
+  // 'rhel-openssl-3.0.x' is specifically for Netlify/AWS Lambda on Node 20
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_URL")   // Transaction Pooler (Port 6543)
-  directUrl = env("DIRECT_URL")     // Session Pooler (Port 5432)
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
