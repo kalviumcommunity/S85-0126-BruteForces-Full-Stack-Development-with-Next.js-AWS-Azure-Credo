@@ -1,16 +1,13 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider      = "prisma-client-js"
-  // Required for Netlify's build environment
-  binaryTargets = ["native", "rhel-debian-node-20"]
+  // 'native' for local, 'rhel...' for Netlify functions, 'debian...' for Netlify build container
+  binaryTargets = ["native", "rhel-openssl-3.0.x", "debian-openssl-3.0.x"]
 }
 
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_URL")   // Transaction Pooler (Port 6543)
-  directUrl = env("DIRECT_URL")     // Session Pooler (Port 5432)
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
