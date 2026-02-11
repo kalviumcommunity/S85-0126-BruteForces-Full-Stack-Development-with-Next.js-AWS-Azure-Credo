@@ -3,20 +3,20 @@
 
 generator client {
   provider      = "prisma-client-js"
-  // Added for compatibility with Netlify's build environment
+  // Required for Netlify's build environment
   binaryTargets = ["native", "rhel-debian-node-20"]
 }
 
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_URL")   // Used for standard queries (Transaction Pooler - Port 6543)
-  directUrl = env("DIRECT_URL")     // Used for migrations (Session Pooler - Port 5432)
+  url       = env("DATABASE_URL")   // Transaction Pooler (Port 6543)
+  directUrl = env("DIRECT_URL")     // Session Pooler (Port 5432)
 }
 
 model User {
   id           String     @id @default(uuid())
-  email        @unique
-  role         Role       @default(USER) // USER, ADMIN, COMMUNITY_LEADER
+  email        String     @unique    // Fixed: Added String type here
+  role         Role       @default(USER)
   createdAt    DateTime   @default(now())
   
   // Relations
@@ -62,7 +62,7 @@ model Vouch {
   receiver_business_id String
   receiver_business    Business @relation(fields: [receiver_business_id], references: [id])
 
-  @@unique([voucher_id, receiver_business_id]) // Prevent duplicate vouches
+  @@unique([voucher_id, receiver_business_id])
 }
 
 enum Role {
