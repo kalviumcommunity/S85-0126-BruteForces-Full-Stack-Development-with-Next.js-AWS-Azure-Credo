@@ -1,5 +1,5 @@
 [build]
-  # Removed 'npx prisma migrate deploy' to unblock the build
+  # We removed 'npx prisma migrate deploy' because you already did it locally!
   command = "npx prisma generate && npm run build"
   publish = ".next"
 
