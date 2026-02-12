@@ -35,7 +35,10 @@ export default async function BusinessProfile({ params }: { params: { id: string
     ? business.receivedVouches.some((v) => v.voucher_id === session.user.id)
     : false;
   const canVouch = session && !hasVouched && business.ownerId !== session.user.id;
-  const profileUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://credo-app.com'}/business/${business.slug || business.id}`;
+  
+  // Ensure consistent URL generation
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const profileUrl = `${baseUrl}/business/${business.slug || business.id}`;
 
   return (
     <div className="min-h-screen bg-background pb-20">

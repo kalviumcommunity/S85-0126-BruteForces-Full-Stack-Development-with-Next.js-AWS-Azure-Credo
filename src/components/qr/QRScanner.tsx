@@ -67,39 +67,34 @@ export const QRScanner = () => {
     setScanResult(decodedText);
 
     try {
-      // Decode Logic: Expecting URL like https://credo.app/p/[slug]
-      // We need to extract the slug or ID. 
-      // For this example, let's assume we look up ID by slug on server, or the QR contains IDs.
-      // Let's assume the QR *is* the URL.
-      
-      // We need a server action that can handle slug or ID. 
-      // For now, let's assume we can parse the slug from the URL.
-      const url = new URL(decodedText);
-      const pathParts = url.pathname.split('/');
-      const slugIndex = pathParts.indexOf('p');
       let businessIdentifier = '';
       
-      if (slugIndex !== -1 && pathParts[slugIndex + 1]) {
-          businessIdentifier = pathParts[slugIndex + 1];
+      if (decodedText.startsWith('http')) {
+          const url = new URL(decodedText);
+          const pathParts = url.pathname.split('/');
+          
+          let slugIndex = pathParts.indexOf('business');
+          if (slugIndex === -1) slugIndex = pathParts.indexOf('p');
+          
+          if (slugIndex !== -1 && pathParts[slugIndex + 1]) {
+              businessIdentifier = pathParts[slugIndex + 1];
+          } else {
+             throw new Error("Invalid Credo QR Code URL");
+          }
       } else {
-         throw new Error("Invalid Credo QR Code");
+          // Assume raw slug/id
+          businessIdentifier = decodedText;
       }
 
-      // We need to resolve slug to ID, or update vouchForBusiness to take a slug.
-      // Since vouchForBusiness takes receiverId (UUID), we'll need a lookup function.
-      // For this snippet, let's assume we extend vouchForBusiness or have a lookup action.
-      // I'll call a hypothetical wrapper here.
-      
-      // NOTE: In a real implementation, you'd likely fetch the business ID given the slug first,
-      // or update the server action to accept a slug.
-      // I will simulate success for the scaffold.
-      
       console.log(`Scanned: ${businessIdentifier}`);
       
-      // Call server action (Simulated call)
-      // const res = await vouchForBusiness(businessIdentifier); // Need to resolve ID first
+      const res = await vouchForBusiness(businessIdentifier);
       
-      setMessage({ type: 'success', text: `Scanned ${businessIdentifier}! (Integration pending)` });
+      if (res.success) {
+        setMessage({ type: 'success', text: res.message || 'Vouch recorded!' });
+      } else {
+        setMessage({ type: 'error', text: res.message || 'Error processing vouch.' });
+      }
 
     } catch (err) {
       setMessage({ type: 'error', text: "Invalid QR Code format" });
