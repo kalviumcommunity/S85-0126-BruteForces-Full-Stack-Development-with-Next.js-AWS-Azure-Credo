@@ -6,16 +6,16 @@ import { redirect } from "next/navigation"
 import { z } from "zod"
 
 const businessSchema = z.object({
-  name: z.string().min(2),
+  name: z.string().min(2, "Name must be at least 2 characters"),
   description: z.string().optional(),
   address: z.string().optional(),
 })
 
-export async function createBusiness(formData: FormData) {
+export async function createBusiness(prevState: any, formData: FormData) {
   const dbUser = await getAuthenticatedUser()
 
   if (!dbUser) {
-    redirect('/login')
+    return { error: "User not authenticated" }
   }
 
   const name = formData.get('name') as string
@@ -25,17 +25,36 @@ export async function createBusiness(formData: FormData) {
   // Validate
   const result = businessSchema.safeParse({ name, description, address })
   if (!result.success) {
-    return { error: "Invalid data" }
+    return { error: result.error.errors[0].message }
   }
 
-  await prisma.business.create({
-    data: {
-      name,
-      description,
-      address,
-      ownerId: dbUser.id
-    }
-  })
+  // Generate Slug
+  let baseSlug = name.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
+  if (!baseSlug) baseSlug = "business";
+  
+  let slug = baseSlug;
+  let counter = 1;
+  
+  // Ensure uniqueness
+  while (await prisma.business.findUnique({ where: { slug } })) {
+      slug = `${baseSlug}-${counter}`;
+      counter++;
+  }
+
+  try {
+    await prisma.business.create({
+      data: {
+        name,
+        description,
+        address,
+        ownerId: dbUser.id,
+        slug
+      }
+    })
+  } catch (error) {
+    console.error("Database error:", error)
+    return { error: "Failed to create business. Please try again." }
+  }
 
   redirect(`/dashboard`)
 }

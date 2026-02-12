@@ -31,7 +31,7 @@ export default function RootLayout({
         >
           <AuthProvider>
             <FloatingNavbar />
-            <main className="min-h-screen">{children}</main>
+            <main className="min-h-screen pt-24 md:pt-28">{children}</main>
           </AuthProvider>
         </ThemeProvider>
       </body>

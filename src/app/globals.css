@@ -98,9 +98,9 @@
   .glass {
     @apply bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-white/20 dark:border-white/5;
   }
-
+  
   .glass-strong {
-    @apply bg-white/90 dark:bg-slate-950/90 backdrop-blur-2xl border border-slate-200/50 dark:border-slate-800/50;
+    @apply bg-white/80 dark:bg-slate-950/80 backdrop-blur-2xl border border-white/20 dark:border-white/10;
   }
 
   .glow-primary {

@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { getAuthenticatedUser } from '@/lib/server-auth';
 
 // Authenticated Vouch Action
-export async function vouchForBusiness(receiverId: string) {
+export async function vouchForBusiness(receiverInput: string) {
   try {
     // 1. Auth Check
     const user = await getAuthenticatedUser();
@@ -13,11 +13,26 @@ export async function vouchForBusiness(receiverId: string) {
     if (!user) {
         return { success: false, message: "Unauthorized. Please log in." };
     }
-    
+
+    // Resolve receiverInput to Business ID (handles ID or Slug)
+    const targetBusiness = await prisma.business.findFirst({
+        where: {
+            OR: [
+                { id: receiverInput },
+                { slug: receiverInput }
+            ]
+        }
+    });
+
+    if (!targetBusiness) {
+        return { success: false, message: "Business not found." };
+    }
+
+    const receiverId = targetBusiness.id;
     const voucherId = user.id;
 
-    if (voucherId === receiverId) {
-      return { success: false, message: "You cannot vouch for yourself." };
+    if (targetBusiness.ownerId === voucherId) {
+      return { success: false, message: "You cannot vouch for your own business." };
     }
 
     // 2. Check if user already vouched
