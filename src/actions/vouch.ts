@@ -15,14 +15,23 @@ export async function vouchForBusiness(receiverInput: string) {
     }
 
     // Resolve receiverInput to Business ID (handles ID or Slug)
-    const targetBusiness = await prisma.business.findFirst({
-        where: {
-            OR: [
-                { id: receiverInput },
-                { slug: receiverInput }
-            ]
-        }
-    });
+    // We must validate UUID format to avoid Postgres errors when querying UUID columns with non-UUID strings
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(receiverInput);
+
+    let targetBusiness = null;
+
+    if (isUUID) {
+        targetBusiness = await prisma.business.findUnique({
+            where: { id: receiverInput }
+        });
+    }
+
+    // If not found by ID (or not a UUID), try finding by slug
+    if (!targetBusiness) {
+        targetBusiness = await prisma.business.findUnique({
+            where: { slug: receiverInput }
+        });
+    }
 
     if (!targetBusiness) {
         return { success: false, message: "Business not found." };

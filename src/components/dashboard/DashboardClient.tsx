@@ -190,9 +190,11 @@ export function DashboardClient({ data }: { data: any }) {
           <h2 className="text-2xl font-bold">Hey, {user.email.split('@')[0]}!</h2>
           <p className="text-muted-foreground max-w-md">You haven&apos;t created a business profile yet. Start building your reputation today.</p>
         </div>
-        <Button size="lg" className="rounded-xl gap-2">
-          Create Business Profile <ArrowUpRight className="w-4 h-4" />
-        </Button>
+        <Link href="/business/new">
+          <Button size="lg" className="rounded-xl gap-2">
+            Create Business Profile <ArrowUpRight className="w-4 h-4" />
+          </Button>
+        </Link>
       </div>
     );
   }
