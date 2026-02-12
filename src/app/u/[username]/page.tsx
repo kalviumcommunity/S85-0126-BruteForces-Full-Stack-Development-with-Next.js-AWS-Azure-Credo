@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
-import { ShieldCheck, Users, Calendar } from 'lucide-react';
+import { ShieldCheck, Users, Calendar, FileText } from 'lucide-react';
 
 function Badge({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
@@ -52,9 +52,13 @@ export default async function PublicProfilePage({
         {/* Profile Header */}
         <div className="-mt-20 mb-10 flex flex-col md:flex-row items-start md:items-end gap-6">
           <div className="h-36 w-36 rounded-3xl border-4 border-background bg-card shadow-2xl flex items-center justify-center overflow-hidden z-20">
-            <div className="text-4xl font-bold text-primary flex items-center justify-center w-full h-full bg-primary/5">
-              {business.name.substring(0, 2).toUpperCase()}
-            </div>
+            {business.profileImage ? (
+              <img src={business.profileImage} alt={business.name} className="w-full h-full object-cover" />
+            ) : (
+                <div className="text-4xl font-bold text-primary flex items-center justify-center w-full h-full bg-primary/5">
+                {business.name.substring(0, 2).toUpperCase()}
+                </div>
+            )}
           </div>
 
           <div className="flex-1 space-y-3 pb-2">
@@ -93,6 +97,31 @@ export default async function PublicProfilePage({
 
         {/* Vouches Section */}
         <section className="pb-20">
+
+          {business.documents && business.documents.length > 0 && (
+            <div className="mb-8">
+              <h3 className="font-semibold text-lg flex items-center gap-2 mb-4">
+                <FileText className="w-5 h-5 text-primary" />
+                Public Documents
+              </h3>
+              <div className="grid sm:grid-cols-2 gap-3">
+                {business.documents.map((doc, i) => (
+                  <a
+                    key={i}
+                    href={doc}
+                    target="_blank"
+                    className="flex items-center gap-3 p-3 rounded-xl border bg-card hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="h-10 w-10 shrink-0 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <FileText className="w-5 h-5 text-primary" />
+                    </div>
+                    <span className="text-sm font-medium truncate">Document {i + 1}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <Users className="w-5 h-5 text-primary" />

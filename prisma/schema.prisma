@@ -37,6 +37,8 @@ model Business {
   trust_score     Int            @default(0)
   tier            TrustTier      @default(UNVERIFIED)
   slug            String?        @unique
+  profileImage    String?
+  documents       String[]       @default([])
   
   ownerId         String
   owner           User           @relation(fields: [ownerId], references: [id])
