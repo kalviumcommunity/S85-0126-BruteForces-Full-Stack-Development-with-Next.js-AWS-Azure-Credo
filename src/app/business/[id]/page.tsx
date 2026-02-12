@@ -62,8 +62,12 @@ export default async function BusinessProfile({ params }: { params: { id: string
           <div className="p-6 sm:p-8">
             <div className="flex flex-col sm:flex-row gap-6 items-start">
               {/* Avatar */}
-              <div className="h-20 w-20 rounded-2xl bg-primary/10 flex items-center justify-center text-2xl font-bold text-primary shrink-0 shadow-md ring-4 ring-background">
-                {business.name.charAt(0)}
+              <div className="h-20 w-20 rounded-2xl bg-primary/10 flex items-center justify-center text-2xl font-bold text-primary shrink-0 shadow-md ring-4 ring-background overflow-hidden relative">
+                {business.profileImage ? (
+                  <img src={business.profileImage} alt={business.name} className="w-full h-full object-cover" />
+                ) : (
+                  business.name.charAt(0)
+                )}
               </div>
 
               <div className="flex-1 w-full space-y-3">
@@ -161,6 +165,29 @@ export default async function BusinessProfile({ params }: { params: { id: string
               )}
             </div>
           </div>
+
+          {/* Documents Section */}
+          {business.documents && business.documents.length > 0 && (
+            <div className="rounded-3xl border bg-card p-6 mt-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2 text-sm">
+                <FileText className="w-4 h-4 text-primary" /> Documents
+              </h3>
+              <div className="space-y-2">
+                {business.documents.map((doc, index) => (
+                  <a
+                    key={index}
+                    href={doc}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm p-3 hover:bg-muted rounded-xl transition-colors truncate border border-transparent hover:border-border"
+                  >
+                    <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
+                    <span className="truncate flex-1">Document {index + 1}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Sidebar */}
           <div className="space-y-6">
